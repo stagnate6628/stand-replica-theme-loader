@@ -5,6 +5,7 @@ local dataset = {
 	"2Take1-Header",
 	"Circuit-Footer",
 	"Circuit-Header",
+	"Circuit-Subheader",
 	"Epsilon-Footer",
 	"Epsilon-Overlay",
 	"Epsilon-Subheader",
@@ -45,7 +46,7 @@ local dataset = {
 filesystem.mkdir(filesystem.scripts_dir().."RTL/")
 util.toast("Created directory")
 
-for i = 1, 39 do
+for i = 1, 40 do
 	local Completed = false
 
 	async_http.init("raw.githubusercontent.com", "ukn-repos/rtl/main/assembler/" .. dataset[i] .. ".bmp", function(createfile)
