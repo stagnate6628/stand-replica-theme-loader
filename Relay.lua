@@ -75,7 +75,6 @@ end
 for i = 1, 18 do --interaction
 	local Completed = false
 
-	util.toast(i)
 	async_http.init("raw.githubusercontent.com", "ukn-repos/rtl/main/assembler/Interaction-Header" .. i .. ".bmp", function(createfile)
     	file = io.open(filesystem.scripts_dir() .. "RTL/Interaction-Header" .. i .. ".bmp", "wb")
     	file:write(createfile) file:close() 
