@@ -38,13 +38,14 @@ local dataset = {
 	"XCheats-Footer",
 	"XCheats-Header",
 	"XCheats-Subheader",
-	"Impulse-Subheader"
+	"Impulse-Subheader",
+	"Kiddions-Header"
 }
 
 filesystem.mkdir(filesystem.scripts_dir().."RTL/")
 util.toast("Created directory")
 
-for i = 1, 38 do
+for i = 1, 39 do
 	local Completed = false
 
 	async_http.init("raw.githubusercontent.com", "ukn-repos/rtl/main/assembler/" .. dataset[i] .. ".bmp", function(createfile)
