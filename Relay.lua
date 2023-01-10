@@ -37,20 +37,20 @@ local dataset = {
 	"X-Force-Subheader",
 	"XCheats-Footer",
 	"XCheats-Header",
-	"XCheats-Subheader"
+	"XCheats-Subheader",
+	"Impulse-Subheader"
 }
 
 filesystem.mkdir(filesystem.scripts_dir().."RTL/")
 util.toast("Created directory")
 
-for i = 1, 37 do
+for i = 1, 38 do
 	local Completed = false
 
-	util.toast(i)
 	async_http.init("raw.githubusercontent.com", "ukn-repos/rtl/main/assembler/" .. dataset[i] .. ".bmp", function(createfile)
     	file = io.open(filesystem.scripts_dir() .. "RTL/" .. dataset[i] .. ".bmp", "wb")
     	file:write(createfile) file:close() 
-		util.toast("Imported " .. dataset[i] .. " !")
+		util.toast("(" .. i .. ") Imported " .. dataset[i] .. " !")
 		Completed = true
 	end) 
 	async_http.dispatch()
@@ -90,6 +90,6 @@ async_http.init("raw.githubusercontent.com", "ukn-repos/rtl/main/RTL.lua", funct
     source = io.open(filesystem.scripts_dir() .. SCRIPT_RELPATH, "wb")
     source:write(update) 
 	source:close() 
+	util.restart_script()
 end) 
 async_http.dispatch() 
-util.restart_script()
