@@ -5,7 +5,10 @@ menu.action(menu.my_root(), "Update Script", {}, "", function()
     source:write(update) source:close() util.restart_script()
 	end) async_http.dispatch() util.toast("Reloaded script.")
 end)
-menu.divider(menu.my_root(), "0.81")
+menu.action(menu.my_root(), "Reset Script", {}, "", function()
+	backtobasic()
+end)
+menu.divider(menu.my_root(), "0.82")
 
 -- RTL Dataset [RTL.DS]
 local theme = {
@@ -19,14 +22,13 @@ size = { width = "430", height = "0", options = "0", spacer = "0", scrollbar = "
 font = "calibri"}
 --
 local DX = {
-header = {active = false,height = "0", offset = {x = "0", y = "0"}, animated = false, frame_count = "0", delay = "0", restart_delay = "0"},
+header = {state = "image", height = "0", offset = {x = "0", y = "0"}, animated = false, frame_count = "0", delay = "0", restart_delay = "0"},
 overlay = {active = false},
 subheader = {active = false, height = "0"},
 footer = {active = false, height = "0"},
-activecursor = {active = false, anchor = "header", size = "12", offset = {x = "0", y = "0"}, alignment = ALIGN_BOTTOM_LEFT, color = {r = "255", g = "255", b = "255"}},
+activecursor = {active = false, anchor = "header", size = "0", offset = {x = "0", y = "0"}, alignment = ALIGN_BOTTOM_LEFT, color = {r = "255", g = "255", b = "255"}},
 scrollbar = {active = false},
 border = {active = false, width = "0", color = {r = "255", g = "255", b = "255"}}}
---back = {active = false, position = {x = "0", y = "0"}, }}
 
 -- RTL Core [RTL.CR]
 function initiate(name)
@@ -51,7 +53,7 @@ function initiate(name)
 	async_http.init("raw.githubusercontent.com", "ukn-repos/rtl/main/fonts/" .. theme.font .. ".spritefont", function(override_font)
 		process4 = io.open(filesystem.stand_dir().."Theme/Font.spritefont", "wb") process4:write(override_font) process4:close() menu.trigger_commands("reloadfont") end) async_http.dispatch()
 	--
-	if DX.header.animated == true then headersDX = directx.create_texture(filesystem.scripts_dir() .. "RTL/" .. theme.dirname .. "-Header1.bmp") else headerDX = directx.create_texture(filesystem.scripts_dir() .. "RTL/" .. theme.dirname .. "-Header.bmp") end
+	if DX.header.animated == true then headersDX = directx.create_texture(filesystem.scripts_dir() .. "RTL/" .. theme.dirname .. "-Header1.bmp") elseif DX.header.state ~= "off" then headerDX = directx.create_texture(filesystem.scripts_dir() .. "RTL/" .. theme.dirname .. "-Header.bmp") end
 	if DX.overlay.active == true then overlayDX = directx.create_texture(filesystem.scripts_dir() .. "RTL/" .. theme.name .. "-Overlay.bmp") end
 	if DX.subheader.active == true then subheaderDX = directx.create_texture(filesystem.scripts_dir() .. "RTL/" .. theme.name .. "-Subheader.bmp") end
 	if DX.footer.active == true then footerDX = directx.create_texture(filesystem.scripts_dir() .. "RTL/" .. theme.name .. "-Footer.bmp") end
@@ -62,9 +64,9 @@ function initiate(name)
 	activecursorDX = menu.get_active_list_cursor_text(true, true)
 	if menu.is_open() then
 		if DX.border.active == true then directx.draw_rect(position_x-DX.header.offset.x/1920, position_y, DX.border.width/1920, list_height, DX.border.color.r/255, DX.border.color.g/255, DX.border.color.b/255, 1) directx.draw_rect(position_x+list_width, position_y, DX.border.width/1920, list_height, DX.border.color.r/255, DX.border.color.g/255, DX.border.color.b/255, 1) end
-		if DX.header.active == true then
+		if DX.header.state == "image" then
 			if DX.header.animated == true then directx.draw_texture(headersDX, 1, (DX.header.height/1080)/2, 0, 0, position_x-DX.header.offset.x/1920, (position_y-(DX.header.height+DX.subheader.height)/1080)-(theme.tabs.height/1080)-(DX.header.offset.y/1080), 0, 1, 1, 1, 1) else directx.draw_texture(headerDX, 1, (DX.header.height/1080)/2, 0, 0, position_x-DX.header.offset.x/1920, (position_y-(DX.header.height+DX.subheader.height)/1080)-(theme.tabs.height/1080)-(DX.header.offset.y/1080), 0, 1, 1, 1, 1) end
-		else
+		elseif DX.header.state == "background" then
 			directx.draw_texture(headerDX, (theme.size.width/3840), (DX.header.height/3840), 0, 0, position_x-(DX.header.offset.x/1920), position_y-(DX.header.offset.y/1080), 0, 1, 1, 1, 1)
 		end
 		if DX.overlay.active == true then directx.draw_texture(overlayDX, 1, (DX.header.height/1080)/2, 0, 0, position_x-DX.header.offset.x/1920, (position_y-(DX.header.height+DX.subheader.height)/1080)-(theme.tabs.height/1080)-(DX.header.offset.y/1080), 0, 1, 1, 1, 1) end
@@ -85,6 +87,27 @@ function initiate(name)
 end
 
 -- The game things, definitely not as exciting :I
+function backtobasic()
+	theme = {
+		name = "Stand", dirname = "Stand",
+		position = { x = "1325", y = "560" },
+		color = { background = "00000066", selected = "FF00FF", focused = "FFFFFF", unfocused = "FFFFFF"},
+		tabs = { state = "on", width = "110", height = "32", position = "left", text = { scale = "15", offsetx = "-2", offsety = "3" }, alignment = "left"},
+		text = { scale = "15", offset = {x = "-2", y = "2"}},
+		outline = { width = "0", color = "000000" },
+		size = { width = "450", height = "32", options = "11", spacer = "3", scrollbar = "6", override = "450"},
+		font = "microsoftyahei"}
+	DX = {
+		header = {state = "off",height = "0", offset = {x = "0", y = "0"}, animated = false, frame_count = "0", delay = "0", restart_delay = "0"},
+		overlay = {active = false},
+		subheader = {active = false, height = "0"},
+		footer = {active = false, height = "0"},
+		activecursor = {active = false, anchor = "header", size = "0", offset = {x = "0", y = "0"}, alignment = ALIGN_BOTTOM_LEFT, color = {r = "0", g = "0", b = "0"}},
+		scrollbar = {active = true},
+		border = {active = false, width = "0", color = {r = "0", g = "0", b = "0"}}}
+	initiate(theme.name) 
+end
+
 menu.action(menu.my_root(), "2Take1", {}, "", function()
 	theme = {
 		name = "2Take1", dirname = "2Take1",
@@ -96,7 +119,7 @@ menu.action(menu.my_root(), "2Take1", {}, "", function()
 		size = { width = "483", height = "46", options = "10", spacer = "0", scrollbar = "0", override = "483"},
 		font = "chaletlondonnineteensixty"}
 	DX = {
-		header = {active = true,height = "83", offset = {x = "0", y = "0"}, animated = false, frame_count = "0", delay = "0", restart_delay = "0"},
+		header = {state = "image",height = "83", offset = {x = "0", y = "0"}, animated = false, frame_count = "0", delay = "0", restart_delay = "0"},
 		overlay = {active = false},
 		subheader = {active = false, height = "0"},
 		footer = {active = true, height = "31"},
@@ -117,7 +140,7 @@ menu.action(menu.my_root(), "Impulse VIP", {}, "", function()
 		size = { width = "450", height = "33", options = "15", spacer = "12", scrollbar = "15", override = "450"},
 		font = "chaletcomprimecolognesixty"}
 	DX = {
-		header = {active = true,height = "111", offset = {x = "0", y = "0"}, animated = true, frame_count = "50", delay = "0.05", restart_delay = "1"},
+		header = {state = "image",height = "111", offset = {x = "0", y = "0"}, animated = true, frame_count = "50", delay = "0.05", restart_delay = "1"},
 		overlay = {active = false},
 		subheader = {active = true, height = "35"},
 		footer = {active = true, height = "37"},
@@ -138,7 +161,7 @@ menu.action(menu.my_root(), "Paragon", {}, "", function()
 		size = { width = "508", height = "38", options = "16", spacer = "0", scrollbar = "0", override = "508"},
 		font = "chaletlondonnineteensixty"}
 	DX = {
-		header = {active = true,height = "128", offset = {x = "2", y = "0"}, animated = false, frame_count = "0", delay = "0", restart_delay = "0"},
+		header = {state = "image",height = "128", offset = {x = "2", y = "0"}, animated = false, frame_count = "0", delay = "0", restart_delay = "0"},
 		overlay = {active = false},
 		subheader = {active = true, height = "38"},
 		footer = {active = true, height = "38"},
@@ -159,7 +182,7 @@ menu.action(menu.my_root(), "Luna", {}, "", function()
 		size = { width = "440", height = "32", options = "12", spacer = "0", scrollbar = "0", override = "440"},
 		font = "calibri"}
 	DX = {
-		header = {active = true,height = "125", offset = {x = "0", y = "0"}, animated = false, frame_count = "0", delay = "0", restart_delay = "0"},
+		header = {state = "image",height = "125", offset = {x = "0", y = "0"}, animated = false, frame_count = "0", delay = "0", restart_delay = "0"},
 		overlay = {active = false},
 		subheader = {active = true, height = "34"},
 		footer = {active = true, height = "34"},
@@ -180,7 +203,7 @@ menu.action(menu.my_root(), "Kiddion's Modest", {}, "", function()
 		size = { width = "350", height = "21", options = "40", spacer = "0", scrollbar = "0", override = "350"},
 		font = "segoeuisemibold"}
 	DX = {
-		header = {active = true,height = "20", offset = {x = "0", y = "0"}, animated = false, frame_count = "0", delay = "0", restart_delay = "0"},
+		header = {state = "image",height = "20", offset = {x = "0", y = "0"}, animated = false, frame_count = "0", delay = "0", restart_delay = "0"},
 		overlay = {active = false},
 		subheader = {active = false, height = "0"},
 		footer = {active = false, height = "0"},
@@ -201,7 +224,7 @@ menu.action(menu.my_root(), "Ozark", {}, "", function()
 		size = { width = "432", height = "38", options = "10", spacer = "0", scrollbar = "0", override = "432"},
 		font = "chaletlondonnineteensixty"}
 	DX = {
-		header = {active = true,height = "108", offset = {x = "0", y = "0"}, animated = true, frame_count = "18", delay = "0.05", restart_delay = "8"},
+		header = {state = "image",height = "108", offset = {x = "0", y = "0"}, animated = true, frame_count = "18", delay = "0.05", restart_delay = "8"},
 		overlay = {active = true},
 		subheader = {active = true, height = "37"},
 		footer = {active = false, height = "0"},
@@ -222,7 +245,7 @@ menu.action(menu.my_root(), "Phantom-X", {}, "", function()
 		size = { width = "458", height = "34", options = "15", spacer = "12", scrollbar = "15", override = "458"},
 		font = "chaletcomprimecolognesixty"}
 	DX = {
-		header = {active = true,height = "98", offset = {x = "0", y = "0"}, animated = false, frame_count = "0", delay = "0", restart_delay = "0"},
+		header = {state = "image",height = "98", offset = {x = "0", y = "0"}, animated = false, frame_count = "0", delay = "0", restart_delay = "0"},
 		overlay = {active = false},
 		subheader = {active = true, height = "31"},
 		footer = {active = true, height = "31"},
@@ -243,7 +266,7 @@ menu.action(menu.my_root(), "Fragment", {}, "", function()
 		size = { width = "384", height = "28", options = "13", spacer = "0", scrollbar = "0", override = "384"},
 		font = "robotomedium"}
 	DX = {
-		header = {active = true,height = "70", offset = {x = "0", y = "0"}, animated = false, frame_count = "0", delay = "0", restart_delay = "0"},
+		header = {state = "image",height = "70", offset = {x = "0", y = "0"}, animated = false, frame_count = "0", delay = "0", restart_delay = "0"},
 		overlay = {active = false},
 		subheader = {active = true, height = "59"},
 		footer = {active = true, height = "59"},
@@ -264,7 +287,7 @@ menu.action(menu.my_root(), "Rebound", {}, "", function()
 		size = { width = "460", height = "35", options = "12", spacer = "0", scrollbar = "0", override = "460"},
 		font = "chaletlondonnineteensixty"}
 	DX = {
-		header = {active = true,height = "102", offset = {x = "0", y = "0"}, animated = false, frame_count = "0", delay = "0", restart_delay = "0"},
+		header = {state = "image",height = "102", offset = {x = "0", y = "0"}, animated = false, frame_count = "0", delay = "0", restart_delay = "0"},
 		overlay = {active = false},
 		subheader = {active = true, height = "35"},
 		footer = {active = true, height = "35"},
@@ -285,7 +308,7 @@ menu.action(menu.my_root(), "X-Force", {}, "", function()
 		size = { width = "504", height = "31", options = "14", spacer = "0", scrollbar = "0", override = "504"},
 		font = "chaletlondonnineteensixty"}
 	DX = {
-		header = {active = true,height = "122", offset = {x = "0", y = "0"}, animated = false, frame_count = "0", delay = "0", restart_delay = "0"},
+		header = {state = "image",height = "122", offset = {x = "0", y = "0"}, animated = false, frame_count = "0", delay = "0", restart_delay = "0"},
 		overlay = {active = false},
 		subheader = {active = true, height = "31"},
 		footer = {active = true, height = "31"},
@@ -306,7 +329,7 @@ menu.action(menu.my_root(), "Circuit", {}, "", function()
 		size = { width = "412", height = "31", options = "13", spacer = "0", scrollbar = "0", override = "408"},
 		font = "calibri"}
 	DX = {
-		header = {active = true,height = "101", offset = {x = "2", y = "0"}, animated = false, frame_count = "0", delay = "0", restart_delay = "0"},
+		header = {state = "image",height = "101", offset = {x = "2", y = "0"}, animated = false, frame_count = "0", delay = "0", restart_delay = "0"},
 		overlay = {active = false},
 		subheader = {active = true, height = "34"},
 		footer = {active = true, height = "35"},
@@ -327,7 +350,7 @@ menu.action(menu.my_root(), "Terror", {}, "", function()
 		size = { width = "442", height = "38", options = "17", spacer = "0", scrollbar = "0", override = "442"},
 		font = "chaletcomprimecolognesixty"}
 	DX = {
-		header = {active = true,height = "91", offset = {x = "0", y = "0"}, animated = false, frame_count = "0", delay = "0", restart_delay = "0"},
+		header = {state = "image",height = "91", offset = {x = "0", y = "0"}, animated = false, frame_count = "0", delay = "0", restart_delay = "0"},
 		overlay = {active = false},
 		subheader = {active = true, height = "39"},
 		footer = {active = true, height = "39"},
@@ -348,7 +371,7 @@ menu.action(menu.my_root(), "XCheats", {}, "", function()
 		size = { width = "370", height = "36", options = "10", spacer = "0", scrollbar = "0", override = "365"},
 		font = "chaletlondonnineteensixty"}
 	DX = {
-		header = {active = true,height = "85", offset = {x = "3", y = "0"}, animated = false, frame_count = "0", delay = "0", restart_delay = "0"},
+		header = {state = "image",height = "85", offset = {x = "3", y = "0"}, animated = false, frame_count = "0", delay = "0", restart_delay = "0"},
 		overlay = {active = false},
 		subheader = {active = true, height = "30"},
 		footer = {active = true, height = "30"},
@@ -369,7 +392,7 @@ menu.action(menu.my_root(), "Serendipity", {}, "", function()
 		size = { width = "479", height = "30", options = "23", spacer = "0", scrollbar = "0", override = "469"},
 		font = "chaletcomprimecolognesixty"}
 	DX = {
-		header = {active = false,height = "928", offset = {x = "5", y = "120"}, animated = false, frame_count = "0", delay = "0", restart_delay = "0"},
+		header = {state = "background",height = "928", offset = {x = "5", y = "120"}, animated = false, frame_count = "0", delay = "0", restart_delay = "0"},
 		overlay = {active = false},
 		subheader = {active = false, height = "0"},
 		footer = {active = false, height = "0"},
@@ -390,7 +413,7 @@ menu.action(menu.my_root(), "Epsilon", {}, "", function()
 		size = { width = "432", height = "30", options = "15", spacer = "0", scrollbar = "0", override = "432"},
 		font = "chaletlondonnineteensixty"}
 	DX = {
-		header = {active = true,height = "108", offset = {x = "0", y = "0"}, animated = true, frame_count = "18", delay = "0.05", restart_delay = "8"},
+		header = {state = "image",height = "108", offset = {x = "0", y = "0"}, animated = true, frame_count = "18", delay = "0.05", restart_delay = "8"},
 		overlay = {active = true},
 		subheader = {active = true, height = "28"},
 		footer = {active = true, height = "30"},
@@ -411,7 +434,7 @@ menu.action(menu.my_root(), "The Purge", {}, "", function()
 		size = { width = "441", height = "35", options = "17", spacer = "0", scrollbar = "0", override = "441"},
 		font = "chaletlondonnineteensixty"}
 	DX = {
-		header = {active = true,height = "56", offset = {x = "0", y = "0"}, animated = false, frame_count = "0", delay = "0", restart_delay = "0"},
+		header = {state = "image",height = "56", offset = {x = "0", y = "0"}, animated = false, frame_count = "0", delay = "0", restart_delay = "0"},
 		overlay = {active = false},
 		subheader = {active = false, height = "0"},
 		footer = {active = false, height = "0"},
@@ -419,4 +442,25 @@ menu.action(menu.my_root(), "The Purge", {}, "", function()
 		scrollbar = {active = false},
 		border = {active = false, width = "0", color = {r = "0", g = "0", b = "0"}}}
 	initiate(theme.name)
+end)
+
+menu.action(menu.my_root(), "Reset Script", {}, "", function()
+	theme = {
+		name = "Stand", dirname = "Stand",
+		position = { x = "1325", y = "560" },
+		color = { background = "00000066", selected = "FF00FF", focused = "FFFFFF", unfocused = "FFFFFF"},
+		tabs = { state = "on", width = "110", height = "32", position = "left", text = { scale = "15", offsetx = "-2", offsety = "3" }, alignment = "left"},
+		text = { scale = "15", offset = {x = "-2", y = "2"}},
+		outline = { width = "0", color = "000000" },
+		size = { width = "450", height = "32", options = "11", spacer = "3", scrollbar = "6", override = "450"},
+		font = "microsoftyahei"}
+	DX = {
+		header = {state = "off",height = "0", offset = {x = "0", y = "0"}, animated = false, frame_count = "0", delay = "0", restart_delay = "0"},
+		overlay = {active = false},
+		subheader = {active = false, height = "0"},
+		footer = {active = false, height = "0"},
+		activecursor = {active = false, anchor = "header", size = "0", offset = {x = "0", y = "0"}, alignment = ALIGN_BOTTOM_LEFT, color = {r = "0", g = "0", b = "0"}},
+		scrollbar = {active = true},
+		border = {active = false, width = "0", color = {r = "0", g = "0", b = "0"}}}
+	initiate(theme.name) 
 end)
