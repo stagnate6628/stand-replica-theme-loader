@@ -5,7 +5,7 @@ menu.action(menu.my_root(), "Update Script", {}, "", function()
     source:write(update) source:close() util.restart_script()
 	end) async_http.dispatch() util.toast("Reloaded script.")
 end)
-menu.divider(menu.my_root(), "0.8")
+menu.divider(menu.my_root(), "0.81")
 
 -- RTL Dataset [RTL.DS]
 local theme = {
@@ -37,6 +37,7 @@ function initiate(name)
 	menu.trigger_commands("cursorborderwidth " .. theme.outline.width .. "; cursorborder " .. theme.outline.color)
 	menu.trigger_commands("listwidth " .. theme.size.width .. "; listheight " .. theme.size.height .. "; menuheight " .. theme.size.options .. "; spacersize " .. theme.size.spacer .. "; scrollbar " .. theme.size.scrollbar.. "; listwidth " .. theme.size.override)
 	menu.trigger_commands("borderwidth 0; blur 0; header hide; addressbar hide; showhelptext off; showsyntax off; showsliderbehaviour off; clearstandnotifys") 
+	if DX.scrollbar.active == false then menu.trigger_command(menu.ref_by_path("Stand>Settings>Appearance>Scrollbar>Scrollbar>Disabled")) else menu.trigger_command(menu.ref_by_path("Stand>Settings>Appearance>Scrollbar>Scrollbar>Enabled")) end
 	--
 	async_http.init("raw.githubusercontent.com", "ukn-repos/rtl/main/icons/" .. theme.name .. "-List.png", function(override_list)
 		process1 = io.open(filesystem.stand_dir().."Theme/List.png", "wb") process1:write(override_list) process1:close() menu.trigger_commands("reloadtextures") end) async_http.dispatch() 
@@ -121,7 +122,7 @@ menu.action(menu.my_root(), "Impulse VIP", {}, "", function()
 		subheader = {active = true, height = "35"},
 		footer = {active = true, height = "37"},
 		activecursor = {active = true, anchor = "footer", size = "12", offset = {x = "-7", y = "5"}, alignment = ALIGN_BOTTOM_LEFT, color = {r = "255", g = "255", b = "255"}},
-		scrollbar = {active = false},
+		scrollbar = {active = true},
 		border = {active = false, width = "0", color = {r = "0", g = "0", b = "0"}}}
 	initiate(theme.name)
 end)
@@ -226,7 +227,7 @@ menu.action(menu.my_root(), "Phantom-X", {}, "", function()
 		subheader = {active = true, height = "31"},
 		footer = {active = true, height = "31"},
 		activecursor = {active = true, anchor = "footer", size = "14", offset = {x = "-6", y = "8"}, alignment = ALIGN_BOTTOM_LEFT, color = {r = "255", g = "255", b = "255"}},
-		scrollbar = {active = false},
+		scrollbar = {active = true},
 		border = {active = false, width = "0", color = {r = "0", g = "0", b = "0"}}}
 	initiate(theme.name)
 end)
