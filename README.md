@@ -1,3 +1,0 @@
-# rtl
-
-Hey guy :)
