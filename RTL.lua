@@ -1,20 +1,18 @@
--- RTL Updater [RTL.UP]
-menu.action(menu.my_root(), "Update Script", {}, "", function()
-    async_http.init("raw.githubusercontent.com", "ukn-repos/rtl/main/Relay.lua", function(update)
-        source = io.open(filesystem.scripts_dir() .. SCRIPT_RELPATH, "wb")
-        source:write(update)
-        source:close()
-        util.restart_script()
-    end)
-    async_http.dispatch()
-    util.toast("Reloaded script.")
-end)
-menu.action(menu.my_root(), "Reset Script", {}, "", function()
-    backtobasic()
-end)
-menu.divider(menu.my_root(), "0.82")
+root = menu.my_root()
+script_dir = filesystem.scripts_dir() .. "RTL"
+theme_dir = filesystem.stand_dir() .. "Theme"
 
--- RTL Dataset [RTL.DS]
+github_url = "raw.githubusercontent.com"
+repo_url = "nealcaffrey259/stand-theme-loader/main/"
+
+root:action("Restart script", {}, "", function()
+    util:restart_script()
+end)
+
+-- todo use action table to use themes?
+
+root:divider("v1.0")
+
 local theme = {
     name = "name",
     dirname = "name",
@@ -61,8 +59,8 @@ local theme = {
     },
     font = "calibri"
 }
---
-local DX = {
+
+local dx = {
     header = {
         state = "image",
         height = "0",
@@ -115,8 +113,140 @@ local DX = {
     }
 }
 
--- RTL Core [RTL.CR]
-function initiate(name)
+function download_theme(theme, dx)
+    local name = theme.name
+
+    if not filesystem.exists(script_dir .. "\\" .. name) then
+        filesystem.mkdir(script_dir .. "\\" .. name)
+    end
+
+    if not dx.header.animated then
+        async_http.init(github_url, repo_url .. name .. "/Header" .. ".bmp", function(header_file)
+            local file = io.open(script_dir .. "\\" .. name .. "\\Header" .. ".bmp", "wb")
+            file:write(header_file)
+            file:close()
+        end)
+        async_http.dispatch()
+    end
+
+    if dx.header.animated then
+        for i = 1, dx.header.frame_count do
+            local done = false
+            async_http.init(github_url, repo_url .. name .. "/Header" .. i .. ".bmp", function(header_file)
+                local file = io.open(script_dir .. "\\" .. name .. "\\Header" .. i .. ".bmp", "wb")
+                file:write(header_file)
+                file:close()
+                done = true
+            end)
+            async_http.dispatch()
+
+            repeat
+                util.yield()
+            until done
+        end
+    end
+
+    if dx.subheader.active then
+        async_http.init(github_url, repo_url .. name .. "/Subheader" .. ".bmp", function(subheader_file)
+            local file = io.open(script_dir .. "\\" .. name .. "\\Subheader" .. ".bmp", "wb")
+            file:write(subheader_file)
+            file:close()
+        end)
+        async_http.dispatch()
+    end
+
+    if dx.header.interaction_header then
+        local header_path = script_dir .. "\\" .. "\\.interaction\\"
+        if not filesystem.exists(header_path) then
+            filesystem.mkdir(header_path)
+        end
+
+        local missing = false
+        -- there is probably a better way to do this
+        for i, path in ipairs(filesystem.list_files(header_path)) do
+            if not filesystem.exists(header_path .. "Header1.bmp") then
+                missing = true
+                break
+            end
+        end
+
+        if missing then
+            for i = 1, 18 do
+                local done = false
+                async_http.init(github_url, repo_url .. name .. "/Interaction/" .. "Header" .. i .. ".bmp",
+                    function(header_file)
+                        local file = io.open(header_path .. "Header" .. i .. ".bmp", "wb")
+                        file:write(header_file)
+                        file:close()
+                        done = true
+                    end)
+                async_http.dispatch()
+
+                repeat
+                    util.yield()
+                until done
+            end
+        end
+
+        async_http.init(github_url, repo_url .. name .. "/Subheader" .. ".bmp", function(subheader_file)
+            local file = io.open(script_dir .. "\\" .. name .. "\\Subheader" .. ".bmp", "wb")
+            file:write(subheader_file)
+            file:close()
+        end)
+        async_http.dispatch()
+    end
+
+    if dx.overlay.active then
+        async_http.init(github_url, repo_url .. name .. "/Overlay" .. ".bmp", function(subheader_file)
+            local file = io.open(script_dir .. "\\" .. name .. "\\Overlay" .. ".bmp", "wb")
+            file:write(subheader_file)
+            file:close()
+        end)
+        async_http.dispatch()
+    end
+
+    async_http.init(github_url, repo_url .. name .. "/Footer" .. ".bmp", function(footer_file)
+        local file = io.open(script_dir .. "\\" .. name .. "\\Footer" .. ".bmp", "wb")
+        file:write(footer_file)
+        file:close()
+    end)
+    async_http.dispatch()
+
+    async_http.init(github_url, repo_url .. name .. "/List" .. ".png", function(list_icon)
+        local file = io.open(theme_dir .. "\\List.png", "wb")
+        file:write(list_icon)
+        file:close()
+        menu.trigger_commands("reloadtextures")
+    end)
+    async_http.dispatch()
+
+    async_http.init(github_url, repo_url .. name .. "/On" .. ".png", function(toggle_on_icon)
+        local file = io.open(theme_dir .. "\\Toggle On.png", "wb")
+        file:write(toggle_on_icon)
+        file:close()
+        menu.trigger_commands("reloadtextures")
+    end)
+    async_http.dispatch()
+
+    async_http.init(github_url, repo_url .. name .. "/Off" .. ".png", function(toggle_off_icon)
+        local file = io.open(theme_dir .. "\\Toggle Off.png", "wb")
+        file:write(toggle_off_icon)
+        file:close()
+        menu.trigger_commands("reloadtextures")
+    end)
+    async_http.dispatch()
+
+    async_http.init(github_url, repo_url .. name .. "/Font" .. ".spritefont", function(toggle_off_icon)
+        local file = io.open(theme_dir .. "\\Font.spritefont", "wb")
+        file:write(toggle_off_icon)
+        file:close()
+        menu.trigger_commands("reloadfont")
+    end)
+    async_http.dispatch()
+
+end
+
+function use_theme(name)
     menu.trigger_commands("menux " .. theme.position.x .. "; menuy " .. theme.position.y)
     menu.trigger_commands("background " .. theme.color.background .. "; primary " .. theme.color.selected ..
                               "; focustext " .. theme.color.focused .. "; focusrighttext " .. theme.color.focused ..
@@ -135,149 +265,126 @@ function initiate(name)
                               theme.size.options .. "; spacersize " .. theme.size.spacer .. "; scrollbar " ..
                               theme.size.scrollbar .. "; listwidth " .. theme.size.override)
     menu.trigger_commands(
-        "borderwidth 0; blur 0; header hide; addressbar hide; showhelptext off; showsyntax off; showsliderbehaviour off; clearstandnotifys")
-    if DX.scrollbar.active == false then
-        menu.trigger_command(menu.ref_by_path("Stand>Settings>Appearance>Scrollbar>Scrollbar>Disabled"))
-    else
-        menu.trigger_command(menu.ref_by_path("Stand>Settings>Appearance>Scrollbar>Scrollbar>Enabled"))
-    end
-    --
-    async_http.init("raw.githubusercontent.com", "ukn-repos/rtl/main/icons/" .. theme.name .. "-List.png",
-        function(override_list)
-            process1 = io.open(filesystem.stand_dir() .. "Theme/List.png", "wb")
-            process1:write(override_list)
-            process1:close()
-            menu.trigger_commands("reloadtextures")
-        end)
-    async_http.dispatch()
+        "borderwidth 0; blur 0; header hide; showhelptext off; showsyntax off; showsliderbehaviour off;")
 
-    async_http.init("raw.githubusercontent.com", "ukn-repos/rtl/main/icons/" .. theme.name .. "-ON.png",
-        function(override_toggleon)
-            process2 = io.open(filesystem.stand_dir() .. "Theme/Toggle On.png", "wb")
-            process2:write(override_toggleon)
-            process2:close()
-            menu.trigger_commands("reloadtextures")
-        end)
-    async_http.dispatch()
+    menu.trigger_command(menu.ref_by_path("Stand>Settings>Appearance>Scrollbar>Scrollbar>" ..
+                                              (dx.scrollbar.active == false and "Disabled" or "Enabled")))
+    menu.trigger_commands("addressbar hide; " .. (name == "Stand" and "addressbar;" or "") .. "clearstandnotifys;")
 
-    async_http.init("raw.githubusercontent.com", "ukn-repos/rtl/main/icons/" .. theme.name .. "-OFF.png",
-        function(override_toggleoff)
-            process3 = io.open(filesystem.stand_dir() .. "Theme/Toggle Off.png", "wb")
-            process3:write(override_toggleoff)
-            process3:close()
-            menu.trigger_commands("reloadtextures")
-        end)
-    async_http.dispatch()
+    if dx.header.animated == true then
+        headersDX = directx.create_texture(script_dir .. "\\" .. theme.name .. "\\" .. theme.dirname .. "\\Header1.bmp")
+    elseif dx.header.state ~= "off" then
+        headerDX = directx.create_texture(script_dir .. "\\" .. theme.dirname .. "\\Header.bmp")
+    end
 
-    async_http.init("raw.githubusercontent.com", "ukn-repos/rtl/main/fonts/" .. theme.font .. ".spritefont",
-        function(override_font)
-            process4 = io.open(filesystem.stand_dir() .. "Theme/Font.spritefont", "wb")
-            process4:write(override_font)
-            process4:close()
-            menu.trigger_commands("reloadfont")
-        end)
-    async_http.dispatch()
-    --
-    if DX.header.animated == true then
-        headersDX = directx.create_texture(filesystem.scripts_dir() .. "RTL/" .. theme.dirname .. "-Header1.bmp")
-    elseif DX.header.state ~= "off" then
-        headerDX = directx.create_texture(filesystem.scripts_dir() .. "RTL/" .. theme.dirname .. "-Header.bmp")
+    if dx.overlay.active == true then
+        overlayDX = directx.create_texture(script_dir .. "\\" .. theme.name .. "\\Overlay.bmp")
     end
-    if DX.overlay.active == true then
-        overlayDX = directx.create_texture(filesystem.scripts_dir() .. "RTL/" .. theme.name .. "-Overlay.bmp")
+
+    if dx.subheader.active == true then
+        subheaderDX = directx.create_texture(script_dir .. "\\" .. theme.name .. "\\Subheader.bmp")
     end
-    if DX.subheader.active == true then
-        subheaderDX = directx.create_texture(filesystem.scripts_dir() .. "RTL/" .. theme.name .. "-Subheader.bmp")
+
+    if dx.footer.active == true then
+        footerDX = directx.create_texture(script_dir .. "\\" .. theme.name .. "\\Footer.bmp")
     end
-    if DX.footer.active == true then
-        footerDX = directx.create_texture(filesystem.scripts_dir() .. "RTL/" .. theme.name .. "-Footer.bmp")
-    end
-    if DX.scrollbar.active == true then
-        scrollbarDX = directx.create_texture(filesystem.scripts_dir() .. "RTL/UniversalScrollbar.bmp")
-    end
-    --
+
+    -- idk what this is
+    -- if dx.scrollbar.active == true then
+    -- scrollbarDX = directx.create_texture(filesystem.scripts_dir() .. "RTL/UniversalScrollbar.bmp")
+    -- end
+
     util.create_tick_handler(function()
         if theme.name ~= name then
             return false
         end
+
         position_x, position_y, list_width, list_height = menu.get_main_view_position_and_size()
         activecursorDX = menu.get_active_list_cursor_text(true, true)
+
         if menu.is_open() then
-            if DX.border.active == true then
-                directx.draw_rect(position_x - DX.header.offset.x / 1920, position_y, DX.border.width / 1920,
-                    list_height, DX.border.color.r / 255, DX.border.color.g / 255, DX.border.color.b / 255, 1)
-                directx.draw_rect(position_x + list_width, position_y, DX.border.width / 1920, list_height,
-                    DX.border.color.r / 255, DX.border.color.g / 255, DX.border.color.b / 255, 1)
+            if dx.border.active == true then
+                directx.draw_rect(position_x - dx.header.offset.x / 1920, position_y, dx.border.width / 1920,
+                    list_height, dx.border.color.r / 255, dx.border.color.g / 255, dx.border.color.b / 255, 1)
+                directx.draw_rect(position_x + list_width, position_y, dx.border.width / 1920, list_height,
+                    dx.border.color.r / 255, dx.border.color.g / 255, dx.border.color.b / 255, 1)
             end
-            if DX.header.state == "image" then
-                if DX.header.animated == true then
-                    directx.draw_texture(headersDX, 1, (DX.header.height / 1080) / 2, 0, 0,
-                        position_x - DX.header.offset.x / 1920,
-                        (position_y - (DX.header.height + DX.subheader.height) / 1080) - (theme.tabs.height / 1080) -
-                            (DX.header.offset.y / 1080), 0, 1, 1, 1, 1)
+
+            if dx.header.state == "image" then
+                if dx.header.animated == true then
+                    directx.draw_texture(headersDX, 1, (dx.header.height / 1080) / 2, 0, 0,
+                        position_x - dx.header.offset.x / 1920,
+                        (position_y - (dx.header.height + dx.subheader.height) / 1080) - (theme.tabs.height / 1080) -
+                            (dx.header.offset.y / 1080), 0, 1, 1, 1, 1)
                 else
-                    directx.draw_texture(headerDX, 1, (DX.header.height / 1080) / 2, 0, 0,
-                        position_x - DX.header.offset.x / 1920,
-                        (position_y - (DX.header.height + DX.subheader.height) / 1080) - (theme.tabs.height / 1080) -
-                            (DX.header.offset.y / 1080), 0, 1, 1, 1, 1)
+                    directx.draw_texture(headerDX, 1, (dx.header.height / 1080) / 2, 0, 0,
+                        position_x - dx.header.offset.x / 1920,
+                        (position_y - (dx.header.height + dx.subheader.height) / 1080) - (theme.tabs.height / 1080) -
+                            (dx.header.offset.y / 1080), 0, 1, 1, 1, 1)
                 end
-            elseif DX.header.state == "background" then
-                directx.draw_texture(headerDX, (theme.size.width / 3840), (DX.header.height / 3840), 0, 0,
-                    position_x - (DX.header.offset.x / 1920), position_y - (DX.header.offset.y / 1080), 0, 1, 1, 1, 1)
+            elseif dx.header.state == "background" then
+                directx.draw_texture(headerDX, (theme.size.width / 3840), (dx.header.height / 3840), 0, 0,
+                    position_x - (dx.header.offset.x / 1920), position_y - (dx.header.offset.y / 1080), 0, 1, 1, 1, 1)
             end
-            if DX.overlay.active == true then
-                directx.draw_texture(overlayDX, 1, (DX.header.height / 1080) / 2, 0, 0,
-                    position_x - DX.header.offset.x / 1920,
-                    (position_y - (DX.header.height + DX.subheader.height) / 1080) - (theme.tabs.height / 1080) -
-                        (DX.header.offset.y / 1080), 0, 1, 1, 1, 1)
+
+            if dx.overlay.active == true then
+                directx.draw_texture(overlayDX, 1, (dx.header.height / 1080) / 2, 0, 0,
+                    position_x - dx.header.offset.x / 1920,
+                    (position_y - (dx.header.height + dx.subheader.height) / 1080) - (theme.tabs.height / 1080) -
+                        (dx.header.offset.y / 1080), 0, 1, 1, 1, 1)
             end
-            if DX.subheader.active == true then
-                directx.draw_texture(subheaderDX, 1, (DX.subheader.height / 1080) / 2, 0, 0,
-                    position_x - DX.header.offset.x / 1920, (position_y - DX.subheader.height / 1080) -
-                        (theme.tabs.height / 1080) - (DX.header.offset.y / 1080), 0, 1, 1, 1, 1)
+
+            if dx.subheader.active == true then
+                directx.draw_texture(subheaderDX, 1, (dx.subheader.height / 1080) / 2, 0, 0,
+                    position_x - dx.header.offset.x / 1920, (position_y - dx.subheader.height / 1080) -
+                        (theme.tabs.height / 1080) - (dx.header.offset.y / 1080), 0, 1, 1, 1, 1)
             end
-            if DX.footer.active == true then
-                directx.draw_texture(footerDX, 1, (DX.footer.height / 1080) / 2, 0, 0,
-                    position_x - DX.header.offset.x / 1920, (position_y + list_height - (1 / 1080)), 0, 1, 1, 1, 1)
+
+            if dx.footer.active == true then
+                directx.draw_texture(footerDX, 1, (dx.footer.height / 1080) / 2, 0, 0,
+                    position_x - dx.header.offset.x / 1920, (position_y + list_height - (1 / 1080)), 0, 1, 1, 1, 1)
             end
-            if DX.activecursor.active == true then
-                if DX.activecursor.anchor == "header" then
-                    directx.draw_text(position_x - DX.activecursor.offset.x / 1920,
-                        position_y - DX.activecursor.offset.y / 1080, activecursorDX, DX.activecursor.alignment,
-                        (DX.activecursor.size / 11) / 2, DX.activecursor.color.r / 255, DX.activecursor.color.g / 255,
-                        DX.activecursor.color.b / 255, 1)
+
+            if dx.activecursor.active == true then
+                if dx.activecursor.anchor == "header" then
+                    directx.draw_text(position_x - dx.activecursor.offset.x / 1920,
+                        position_y - dx.activecursor.offset.y / 1080, activecursorDX, dx.activecursor.alignment,
+                        (dx.activecursor.size / 11) / 2, dx.activecursor.color.r / 255, dx.activecursor.color.g / 255,
+                        dx.activecursor.color.b / 255, 1)
                 end
-                if DX.activecursor.anchor == "footer" then
-                    directx.draw_text(position_x - DX.activecursor.offset.x / 1920, (position_y + list_height +
-                        (theme.size.height / 1080)) - DX.activecursor.offset.y / 1080, activecursorDX,
-                        DX.activecursor.alignment, (DX.activecursor.size / 11) / 2, DX.activecursor.color.r / 255,
-                        DX.activecursor.color.g / 255, DX.activecursor.color.b / 255, 1)
+
+                if dx.activecursor.anchor == "footer" then
+                    directx.draw_text(position_x - dx.activecursor.offset.x / 1920, (position_y + list_height +
+                        (theme.size.height / 1080)) - dx.activecursor.offset.y / 1080, activecursorDX,
+                        dx.activecursor.alignment, (dx.activecursor.size / 11) / 2, dx.activecursor.color.r / 255,
+                        dx.activecursor.color.g / 255, dx.activecursor.color.b / 255, 1)
                 end
+
             end
         end
     end)
+
+    -- animated headers
     util.create_tick_handler(function()
         if theme.name ~= name then
             return false
         end
-        if DX.header.animated == true then
-            for i = 1, DX.header.frame_count do
+        if dx.header.animated == true then
+            for i = 1, dx.header.frame_count do
                 if theme.name ~= name then
                     return false
                 end
-                util.yield(DX.header.delay * 1000)
-                headersDX = directx.create_texture(
-                    filesystem.scripts_dir() .. "RTL/" .. theme.dirname .. "-Header" .. i .. ".bmp")
+                util.yield(dx.header.delay * 1000)
+                headersDX = directx.create_texture(script_dir .. "\\" .. name .. "\\Header" .. i .. ".bmp")
             end
-            util.yield(DX.header.restart_delay * 1000)
+            util.yield(dx.header.restart_delay * 1000)
         else
             return false
         end
     end)
 end
 
--- The game things, definitely not as exciting :I
-function backtobasic()
+function use_default_theme()
     theme = {
         name = "Stand",
         dirname = "Stand",
@@ -324,7 +431,7 @@ function backtobasic()
         },
         font = "microsoftyahei"
     }
-    DX = {
+    dx = {
         header = {
             state = "off",
             height = "0",
@@ -376,10 +483,15 @@ function backtobasic()
             }
         }
     }
-    initiate(theme.name)
+    use_theme(theme.name)
 end
 
-menu.action(menu.my_root(), "2Take1", {}, "", function()
+root:action("Reset theme", {}, "", function()
+    -- todo: default theme assets
+    use_default_theme()
+end)
+
+root:action("2Take1", {}, "", function()
     theme = {
         name = "2Take1",
         dirname = "2Take1",
@@ -426,7 +538,7 @@ menu.action(menu.my_root(), "2Take1", {}, "", function()
         },
         font = "chaletlondonnineteensixty"
     }
-    DX = {
+    dx = {
         header = {
             state = "image",
             height = "83",
@@ -478,10 +590,10 @@ menu.action(menu.my_root(), "2Take1", {}, "", function()
             }
         }
     }
-    initiate(theme.name)
+    download_theme(theme, dx)
+    use_theme(theme.name)
 end)
-
-menu.action(menu.my_root(), "Impulse VIP", {}, "", function()
+root:action("Impulse", {}, "", function()
     theme = {
         name = "Impulse",
         dirname = "Impulse",
@@ -528,7 +640,7 @@ menu.action(menu.my_root(), "Impulse VIP", {}, "", function()
         },
         font = "chaletcomprimecolognesixty"
     }
-    DX = {
+    dx = {
         header = {
             state = "image",
             height = "111",
@@ -580,10 +692,10 @@ menu.action(menu.my_root(), "Impulse VIP", {}, "", function()
             }
         }
     }
-    initiate(theme.name)
+    download_theme(theme, dx)
+    use_theme(theme.name)
 end)
-
-menu.action(menu.my_root(), "Paragon", {}, "", function()
+root:action("Paragon", {}, "", function()
     theme = {
         name = "Paragon",
         dirname = "Paragon",
@@ -630,7 +742,7 @@ menu.action(menu.my_root(), "Paragon", {}, "", function()
         },
         font = "chaletlondonnineteensixty"
     }
-    DX = {
+    dx = {
         header = {
             state = "image",
             height = "128",
@@ -682,10 +794,10 @@ menu.action(menu.my_root(), "Paragon", {}, "", function()
             }
         }
     }
-    initiate(theme.name)
+    download_theme(theme, dx)
+    use_theme(theme.name)
 end)
-
-menu.action(menu.my_root(), "Luna", {}, "", function()
+root:action("Luna", {}, "", function()
     theme = {
         name = "Luna",
         dirname = "Luna",
@@ -732,7 +844,7 @@ menu.action(menu.my_root(), "Luna", {}, "", function()
         },
         font = "calibri"
     }
-    DX = {
+    dx = {
         header = {
             state = "image",
             height = "125",
@@ -784,10 +896,10 @@ menu.action(menu.my_root(), "Luna", {}, "", function()
             }
         }
     }
-    initiate(theme.name)
+    download_theme(theme, dx)
+    use_theme(theme.name)
 end)
-
-menu.action(menu.my_root(), "Kiddion's Modest", {}, "", function()
+root:action("Kiddions", {}, "", function()
     theme = {
         name = "Kiddions",
         dirname = "Kiddions",
@@ -834,7 +946,7 @@ menu.action(menu.my_root(), "Kiddion's Modest", {}, "", function()
         },
         font = "segoeuisemibold"
     }
-    DX = {
+    dx = {
         header = {
             state = "image",
             height = "20",
@@ -886,10 +998,10 @@ menu.action(menu.my_root(), "Kiddion's Modest", {}, "", function()
             }
         }
     }
-    initiate(theme.name)
+    download_theme(theme, dx)
+    use_theme(theme.name)
 end)
-
-menu.action(menu.my_root(), "Ozark", {}, "", function()
+root:action("Ozark", {}, "", function()
     theme = {
         name = "Ozark",
         dirname = "Interaction",
@@ -936,7 +1048,7 @@ menu.action(menu.my_root(), "Ozark", {}, "", function()
         },
         font = "chaletlondonnineteensixty"
     }
-    DX = {
+    dx = {
         header = {
             state = "image",
             height = "108",
@@ -988,418 +1100,10 @@ menu.action(menu.my_root(), "Ozark", {}, "", function()
             }
         }
     }
-    initiate(theme.name)
+    download_theme(theme, dx)
+    use_theme(theme.name)
 end)
-
-menu.action(menu.my_root(), "Phantom-X", {}, "", function()
-    theme = {
-        name = "Phantom-X",
-        dirname = "Phantom-X",
-        position = {
-            x = "190",
-            y = "290"
-        },
-        color = {
-            background = "000000C8",
-            selected = "6A6280",
-            focused = "000000FF",
-            unfocused = "FFFFFFFF"
-        },
-        tabs = {
-            state = "off",
-            width = "0",
-            height = "0",
-            position = "top",
-            text = {
-                scale = "0",
-                offsetx = "0",
-                offsety = "0"
-            },
-            alignment = "centre"
-        },
-        text = {
-            scale = "17",
-            offset = {
-                x = "0",
-                y = "5"
-            }
-        },
-        outline = {
-            width = "0",
-            color = "000000"
-        },
-        size = {
-            width = "458",
-            height = "34",
-            options = "15",
-            spacer = "12",
-            scrollbar = "15",
-            override = "458"
-        },
-        font = "chaletcomprimecolognesixty"
-    }
-    DX = {
-        header = {
-            state = "image",
-            height = "98",
-            offset = {
-                x = "0",
-                y = "0"
-            },
-            animated = false,
-            frame_count = "0",
-            delay = "0",
-            restart_delay = "0"
-        },
-        overlay = {
-            active = false
-        },
-        subheader = {
-            active = true,
-            height = "31"
-        },
-        footer = {
-            active = true,
-            height = "31"
-        },
-        activecursor = {
-            active = true,
-            anchor = "footer",
-            size = "14",
-            offset = {
-                x = "-6",
-                y = "8"
-            },
-            alignment = ALIGN_BOTTOM_LEFT,
-            color = {
-                r = "255",
-                g = "255",
-                b = "255"
-            }
-        },
-        scrollbar = {
-            active = true
-        },
-        border = {
-            active = false,
-            width = "0",
-            color = {
-                r = "0",
-                g = "0",
-                b = "0"
-            }
-        }
-    }
-    initiate(theme.name)
-end)
-
-menu.action(menu.my_root(), "Fragment", {}, "", function()
-    theme = {
-        name = "Fragment",
-        dirname = "Fragment",
-        position = {
-            x = "320",
-            y = "440"
-        },
-        color = {
-            background = "030003D2",
-            selected = "FFFFFFFF",
-            focused = "000000FF",
-            unfocused = "FFFFFFFF"
-        },
-        tabs = {
-            state = "off",
-            width = "0",
-            height = "0",
-            position = "top",
-            text = {
-                scale = "0",
-                offsetx = "0",
-                offsety = "0"
-            },
-            alignment = "centre"
-        },
-        text = {
-            scale = "11",
-            offset = {
-                x = "2",
-                y = "5"
-            }
-        },
-        outline = {
-            width = "0",
-            color = "000000"
-        },
-        size = {
-            width = "384",
-            height = "28",
-            options = "13",
-            spacer = "0",
-            scrollbar = "0",
-            override = "384"
-        },
-        font = "robotomedium"
-    }
-    DX = {
-        header = {
-            state = "image",
-            height = "70",
-            offset = {
-                x = "0",
-                y = "0"
-            },
-            animated = false,
-            frame_count = "0",
-            delay = "0",
-            restart_delay = "0"
-        },
-        overlay = {
-            active = false
-        },
-        subheader = {
-            active = true,
-            height = "59"
-        },
-        footer = {
-            active = true,
-            height = "59"
-        },
-        activecursor = {
-            active = false,
-            anchor = "footer",
-            size = "0",
-            offset = {
-                x = "0",
-                y = "0"
-            },
-            alignment = ALIGN_BOTTOM_LEFT,
-            color = {
-                r = "255",
-                g = "255",
-                b = "255"
-            }
-        },
-        scrollbar = {
-            active = false
-        },
-        border = {
-            active = false,
-            width = "0",
-            color = {
-                r = "0",
-                g = "0",
-                b = "0"
-            }
-        }
-    }
-    initiate(theme.name)
-end)
-
-menu.action(menu.my_root(), "Rebound", {}, "", function()
-    theme = {
-        name = "Rebound",
-        dirname = "Rebound",
-        position = {
-            x = "150",
-            y = "230"
-        },
-        color = {
-            background = "00000096",
-            selected = "FF783AFF",
-            focused = "000000FF",
-            unfocused = "FFFFFFFF"
-        },
-        tabs = {
-            state = "off",
-            width = "0",
-            height = "0",
-            position = "top",
-            text = {
-                scale = "0",
-                offsetx = "0",
-                offsety = "0"
-            },
-            alignment = "centre"
-        },
-        text = {
-            scale = "14",
-            offset = {
-                x = "1",
-                y = "7"
-            }
-        },
-        outline = {
-            width = "0",
-            color = "000000"
-        },
-        size = {
-            width = "460",
-            height = "35",
-            options = "12",
-            spacer = "0",
-            scrollbar = "0",
-            override = "460"
-        },
-        font = "chaletlondonnineteensixty"
-    }
-    DX = {
-        header = {
-            state = "image",
-            height = "102",
-            offset = {
-                x = "0",
-                y = "0"
-            },
-            animated = false,
-            frame_count = "0",
-            delay = "0",
-            restart_delay = "0"
-        },
-        overlay = {
-            active = false
-        },
-        subheader = {
-            active = true,
-            height = "35"
-        },
-        footer = {
-            active = true,
-            height = "35"
-        },
-        activecursor = {
-            active = true,
-            anchor = "header",
-            size = "14",
-            offset = {
-                x = "-450",
-                y = "7"
-            },
-            alignment = ALIGN_BOTTOM_RIGHT,
-            color = {
-                r = "255",
-                g = "255",
-                b = "255"
-            }
-        },
-        scrollbar = {
-            active = false
-        },
-        border = {
-            active = false,
-            width = "0",
-            color = {
-                r = "0",
-                g = "0",
-                b = "0"
-            }
-        }
-    }
-    initiate(theme.name)
-end)
-
-menu.action(menu.my_root(), "X-Force", {}, "", function()
-    theme = {
-        name = "X-Force",
-        dirname = "X-Force",
-        position = {
-            x = "1240",
-            y = "350"
-        },
-        color = {
-            background = "00000096",
-            selected = "35896CFF",
-            focused = "000000FF",
-            unfocused = "FFFFFF"
-        },
-        tabs = {
-            state = "off",
-            width = "0",
-            height = "0",
-            position = "top",
-            text = {
-                scale = "0",
-                offsetx = "0",
-                offsety = "0"
-            },
-            alignment = "centre"
-        },
-        text = {
-            scale = "13",
-            offset = {
-                x = "2",
-                y = "5"
-            }
-        },
-        outline = {
-            width = "0",
-            color = "000000"
-        },
-        size = {
-            width = "504",
-            height = "31",
-            options = "14",
-            spacer = "0",
-            scrollbar = "0",
-            override = "504"
-        },
-        font = "chaletlondonnineteensixty"
-    }
-    DX = {
-        header = {
-            state = "image",
-            height = "122",
-            offset = {
-                x = "0",
-                y = "0"
-            },
-            animated = false,
-            frame_count = "0",
-            delay = "0",
-            restart_delay = "0"
-        },
-        overlay = {
-            active = false
-        },
-        subheader = {
-            active = true,
-            height = "31"
-        },
-        footer = {
-            active = true,
-            height = "31"
-        },
-        activecursor = {
-            active = true,
-            anchor = "header",
-            size = "12",
-            offset = {
-                x = "-492",
-                y = "7"
-            },
-            alignment = ALIGN_BOTTOM_RIGHT,
-            color = {
-                r = "255",
-                g = "255",
-                b = "255"
-            }
-        },
-        scrollbar = {
-            active = false
-        },
-        border = {
-            active = false,
-            width = "0",
-            color = {
-                r = "0",
-                g = "0",
-                b = "0"
-            }
-        }
-    }
-    initiate(theme.name)
-end)
-
-menu.action(menu.my_root(), "Circuit", {}, "", function()
+root:action("Circuit", {}, "", function()
     theme = {
         name = "Circuit",
         dirname = "Circuit",
@@ -1446,7 +1150,7 @@ menu.action(menu.my_root(), "Circuit", {}, "", function()
         },
         font = "calibri"
     }
-    DX = {
+    dx = {
         header = {
             state = "image",
             height = "101",
@@ -1498,316 +1202,10 @@ menu.action(menu.my_root(), "Circuit", {}, "", function()
             }
         }
     }
-    initiate(theme.name)
+    download_theme(theme, dx)
+    use_theme(theme.name)
 end)
-
-menu.action(menu.my_root(), "Terror", {}, "", function()
-    theme = {
-        name = "Terror",
-        dirname = "Terror",
-        position = {
-            x = "32",
-            y = "165"
-        },
-        color = {
-            background = "000000C8",
-            selected = "C1010196",
-            focused = "000000FF",
-            unfocused = "FFFFFF"
-        },
-        tabs = {
-            state = "off",
-            width = "0",
-            height = "0",
-            position = "top",
-            text = {
-                scale = "0",
-                offsetx = "0",
-                offsety = "0"
-            },
-            alignment = "centre"
-        },
-        text = {
-            scale = "22",
-            offset = {
-                x = "-1",
-                y = "3"
-            }
-        },
-        outline = {
-            width = "0",
-            color = "000000"
-        },
-        size = {
-            width = "442",
-            height = "38",
-            options = "17",
-            spacer = "0",
-            scrollbar = "0",
-            override = "442"
-        },
-        font = "chaletcomprimecolognesixty"
-    }
-    DX = {
-        header = {
-            state = "image",
-            height = "91",
-            offset = {
-                x = "0",
-                y = "0"
-            },
-            animated = false,
-            frame_count = "0",
-            delay = "0",
-            restart_delay = "0"
-        },
-        overlay = {
-            active = false
-        },
-        subheader = {
-            active = true,
-            height = "39"
-        },
-        footer = {
-            active = true,
-            height = "39"
-        },
-        activecursor = {
-            active = true,
-            anchor = "header",
-            size = "24",
-            offset = {
-                x = "-400",
-                y = "9"
-            },
-            alignment = ALIGN_BOTTOM_RIGHT,
-            color = {
-                r = "255",
-                g = "255",
-                b = "255"
-            }
-        },
-        scrollbar = {
-            active = false
-        },
-        border = {
-            active = false,
-            width = "0",
-            color = {
-                r = "0",
-                g = "0",
-                b = "0"
-            }
-        }
-    }
-    initiate(theme.name)
-end)
-
-menu.action(menu.my_root(), "XCheats", {}, "", function()
-    theme = {
-        name = "XCheats",
-        dirname = "XCheats",
-        position = {
-            x = "1430",
-            y = "160"
-        },
-        color = {
-            background = "000000E1",
-            selected = "6F7375FF",
-            focused = "000000FF",
-            unfocused = "FFFFFF"
-        },
-        tabs = {
-            state = "off",
-            width = "0",
-            height = "0",
-            position = "top",
-            text = {
-                scale = "0",
-                offsetx = "0",
-                offsety = "0"
-            },
-            alignment = "centre"
-        },
-        text = {
-            scale = "14",
-            offset = {
-                x = "-1",
-                y = "8"
-            }
-        },
-        outline = {
-            width = "0",
-            color = "000000"
-        },
-        size = {
-            width = "370",
-            height = "36",
-            options = "10",
-            spacer = "0",
-            scrollbar = "0",
-            override = "365"
-        },
-        font = "chaletlondonnineteensixty"
-    }
-    DX = {
-        header = {
-            state = "image",
-            height = "85",
-            offset = {
-                x = "3",
-                y = "0"
-            },
-            animated = false,
-            frame_count = "0",
-            delay = "0",
-            restart_delay = "0"
-        },
-        overlay = {
-            active = false
-        },
-        subheader = {
-            active = true,
-            height = "30"
-        },
-        footer = {
-            active = true,
-            height = "30"
-        },
-        activecursor = {
-            active = true,
-            anchor = "header",
-            size = "12",
-            offset = {
-                x = "-355",
-                y = "4"
-            },
-            alignment = ALIGN_BOTTOM_RIGHT,
-            color = {
-                r = "255",
-                g = "255",
-                b = "255"
-            }
-        },
-        scrollbar = {
-            active = false
-        },
-        border = {
-            active = true,
-            width = "3",
-            color = {
-                r = "0",
-                g = "0",
-                b = "0"
-            }
-        }
-    }
-    initiate(theme.name)
-end)
-
-menu.action(menu.my_root(), "Serendipity", {}, "", function()
-    theme = {
-        name = "Serendipity",
-        dirname = "Serendipity",
-        position = {
-            x = "1302",
-            y = "190"
-        },
-        color = {
-            background = "00000000",
-            selected = "000000",
-            focused = "FFFFFF",
-            unfocused = "FFFFFF"
-        },
-        tabs = {
-            state = "off",
-            width = "0",
-            height = "0",
-            position = "top",
-            text = {
-                scale = "0",
-                offsetx = "0",
-                offsety = "0"
-            },
-            alignment = "centre"
-        },
-        text = {
-            scale = "20",
-            offset = {
-                x = "-3",
-                y = "1"
-            }
-        },
-        outline = {
-            width = "0",
-            color = "000000"
-        },
-        size = {
-            width = "479",
-            height = "30",
-            options = "23",
-            spacer = "0",
-            scrollbar = "0",
-            override = "469"
-        },
-        font = "chaletcomprimecolognesixty"
-    }
-    DX = {
-        header = {
-            state = "background",
-            height = "928",
-            offset = {
-                x = "5",
-                y = "120"
-            },
-            animated = false,
-            frame_count = "0",
-            delay = "0",
-            restart_delay = "0"
-        },
-        overlay = {
-            active = false
-        },
-        subheader = {
-            active = false,
-            height = "0"
-        },
-        footer = {
-            active = false,
-            height = "0"
-        },
-        activecursor = {
-            active = false,
-            anchor = "header",
-            size = "0",
-            offset = {
-                x = "0",
-                y = "0"
-            },
-            alignment = ALIGN_BOTTOM_RIGHT,
-            color = {
-                r = "255",
-                g = "255",
-                b = "255"
-            }
-        },
-        scrollbar = {
-            active = false
-        },
-        border = {
-            active = false,
-            width = "0",
-            color = {
-                r = "0",
-                g = "0",
-                b = "0"
-            }
-        }
-    }
-    initiate(theme.name)
-end)
-
-menu.action(menu.my_root(), "Epsilon", {}, "", function()
+root:action("Epsilon", {}, "", function()
     theme = {
         name = "Epsilon",
         dirname = "Interaction",
@@ -1854,7 +1252,7 @@ menu.action(menu.my_root(), "Epsilon", {}, "", function()
         },
         font = "chaletlondonnineteensixty"
     }
-    DX = {
+    dx = {
         header = {
             state = "image",
             height = "108",
@@ -1865,7 +1263,8 @@ menu.action(menu.my_root(), "Epsilon", {}, "", function()
             animated = true,
             frame_count = "18",
             delay = "0.05",
-            restart_delay = "8"
+            restart_delay = "8",
+            interaction_header = true
         },
         overlay = {
             active = true
@@ -1906,209 +1305,6 @@ menu.action(menu.my_root(), "Epsilon", {}, "", function()
             }
         }
     }
-    initiate(theme.name)
-end)
-
-menu.action(menu.my_root(), "The Purge", {}, "", function()
-    theme = {
-        name = "The Purge",
-        dirname = "The Purge",
-        position = {
-            x = "1300",
-            y = "335"
-        },
-        color = {
-            background = "1E1E1EFF",
-            selected = "FF0000FF",
-            focused = "FFFFFF",
-            unfocused = "FFFFFF"
-        },
-        tabs = {
-            state = "off",
-            width = "0",
-            height = "0",
-            position = "top",
-            text = {
-                scale = "0",
-                offsetx = "0",
-                offsety = "0"
-            },
-            alignment = "centre"
-        },
-        text = {
-            scale = "13",
-            offset = {
-                x = "2",
-                y = "5"
-            }
-        },
-        outline = {
-            width = "0",
-            color = "000000"
-        },
-        size = {
-            width = "441",
-            height = "35",
-            options = "17",
-            spacer = "0",
-            scrollbar = "0",
-            override = "441"
-        },
-        font = "chaletlondonnineteensixty"
-    }
-    DX = {
-        header = {
-            state = "image",
-            height = "56",
-            offset = {
-                x = "0",
-                y = "0"
-            },
-            animated = false,
-            frame_count = "0",
-            delay = "0",
-            restart_delay = "0"
-        },
-        overlay = {
-            active = false
-        },
-        subheader = {
-            active = false,
-            height = "0"
-        },
-        footer = {
-            active = false,
-            height = "0"
-        },
-        activecursor = {
-            active = false,
-            anchor = "header",
-            size = "0",
-            offset = {
-                x = "0",
-                y = "0"
-            },
-            alignment = ALIGN_BOTTOM_RIGHT,
-            color = {
-                r = "255",
-                g = "255",
-                b = "255"
-            }
-        },
-        scrollbar = {
-            active = false
-        },
-        border = {
-            active = false,
-            width = "0",
-            color = {
-                r = "0",
-                g = "0",
-                b = "0"
-            }
-        }
-    }
-    initiate(theme.name)
-end)
-
-menu.action(menu.my_root(), "Reset Script", {}, "", function()
-    theme = {
-        name = "Stand",
-        dirname = "Stand",
-        position = {
-            x = "1325",
-            y = "560"
-        },
-        color = {
-            background = "00000066",
-            selected = "FF00FF",
-            focused = "FFFFFF",
-            unfocused = "FFFFFF"
-        },
-        tabs = {
-            state = "on",
-            width = "110",
-            height = "32",
-            position = "left",
-            text = {
-                scale = "15",
-                offsetx = "-2",
-                offsety = "3"
-            },
-            alignment = "left"
-        },
-        text = {
-            scale = "15",
-            offset = {
-                x = "-2",
-                y = "2"
-            }
-        },
-        outline = {
-            width = "0",
-            color = "000000"
-        },
-        size = {
-            width = "450",
-            height = "32",
-            options = "11",
-            spacer = "3",
-            scrollbar = "6",
-            override = "450"
-        },
-        font = "microsoftyahei"
-    }
-    DX = {
-        header = {
-            state = "off",
-            height = "0",
-            offset = {
-                x = "0",
-                y = "0"
-            },
-            animated = false,
-            frame_count = "0",
-            delay = "0",
-            restart_delay = "0"
-        },
-        overlay = {
-            active = false
-        },
-        subheader = {
-            active = false,
-            height = "0"
-        },
-        footer = {
-            active = false,
-            height = "0"
-        },
-        activecursor = {
-            active = false,
-            anchor = "header",
-            size = "0",
-            offset = {
-                x = "0",
-                y = "0"
-            },
-            alignment = ALIGN_BOTTOM_LEFT,
-            color = {
-                r = "0",
-                g = "0",
-                b = "0"
-            }
-        },
-        scrollbar = {
-            active = true
-        },
-        border = {
-            active = false,
-            width = "0",
-            color = {
-                r = "0",
-                g = "0",
-                b = "0"
-            }
-        }
-    }
-    initiate(theme.name)
+    download_theme(theme, dx)
+    use_theme(theme.name)
 end)
