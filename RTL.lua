@@ -487,6 +487,7 @@ function use_default_theme()
             }
         }
     }
+    download_theme(theme, dx)
     use_theme(theme.name)
 end
 
