@@ -1,15 +1,28 @@
 root = menu.my_root()
 script_dir = filesystem.scripts_dir() .. "RTL"
 theme_dir = filesystem.stand_dir() .. "Theme"
+themes_path = script_dir .. "\\themes.txt"
 
 github_url = "raw.githubusercontent.com"
 repo_url = "nealcaffrey259/stand-theme-loader/main/"
 
+current_theme = ""
+
 root:action("Restart script", {}, "", function()
     util:restart_script()
 end)
+root:action("Download themes file", {}, "", function()
+    async_http.init(github_url, repo_url .. "themes.txt", function(themes_file)
+        local file = io.open(themes_path, "wb")
+        file:write(themes_file)
+        file:close()
+    end)
+    async_http.dispatch()
 
--- todo use action table to use themes?
+    if filesystem.exists(themes_path) then
+        util:restart_script()
+    end
+end)
 
 root:divider("v1.0")
 
@@ -113,6 +126,1634 @@ local dx = {
     }
 }
 
+file = io.open(themes_path, "r")
+themes_from_file = {}
+
+for line in file:lines() do
+    table.insert(themes_from_file, line)
+end
+
+theme_selector = menu.action_slider(menu.my_root(), "Theme", {}, "", themes_from_file, function(_, value)
+    if current_theme ~= value then
+        current_theme = value
+    else
+        menu.show_warning(theme_selector, 1,
+            "It appears you are already using the selected theme. You can force the download if it isn't.", function()
+                current_theme = value
+            end)
+    end
+
+    pluto_switch value do
+       case "2Take1":
+            theme = {
+                name = "2Take1",
+                dirname = "2Take1",
+                position = {
+                    x = "1220",
+                    y = "220"
+                },
+                color = {
+                    background = "00000096",
+                    selected = "FFFFFFFF",
+                    focused = "000000FF",
+                    unfocused = "FFFFFF"
+                },
+                tabs = {
+                    state = "on",
+                    width = "69",
+                    height = "44",
+                    position = "top",
+                    text = {
+                        scale = "15",
+                        offsetx = "-2",
+                        offsety = "9"
+                    },
+                    alignment = "centre"
+                },
+                text = {
+                    scale = "13",
+                    offset = {
+                        x = "1",
+                        y = "10"
+                    }
+                },
+                outline = {
+                    width = "0",
+                    color = "000000"
+                },
+                size = {
+                    width = "483",
+                    height = "46",
+                    options = "10",
+                    spacer = "0",
+                    scrollbar = "0",
+                    override = "483"
+                },
+            }
+            dx = {
+                header = {
+                    state = "image",
+                    height = "83",
+                    offset = {
+                        x = "0",
+                        y = "0"
+                    },
+                    animated = false,
+                    frame_count = "0",
+                    delay = "0",
+                    restart_delay = "0"
+                },
+                overlay = {
+                    active = false
+                },
+                subheader = {
+                    active = false,
+                    height = "0"
+                },
+                footer = {
+                    active = true,
+                    height = "31"
+                },
+                activecursor = {
+                    active = false,
+                    anchor = "header",
+                    size = "0",
+                    offset = {
+                        x = "0",
+                        y = "0"
+                    },
+                    alignment = ALIGN_BOTTOM_LEFT,
+                    color = {
+                        r = "0",
+                        g = "0",
+                        b = "0"
+                    }
+                },
+                scrollbar = {
+                    active = false
+                },
+                border = {
+                    active = false,
+                    width = "0",
+                    color = {
+                        r = "0",
+                        g = "0",
+                        b = "0"
+                    }
+                }
+            }
+       break
+       case "Impulse":
+            theme = {
+                name = "Impulse",
+                dirname = "Impulse",
+                position = {
+                    x = "80",
+                    y = "200"
+                },
+                color = {
+                    background = "060A14C8",
+                    selected = "1DA1A5FF",
+                    focused = "000000FF",
+                    unfocused = "FFFFFF"
+                },
+                tabs = {
+                    state = "off",
+                    width = "0",
+                    height = "0",
+                    position = "top",
+                    text = {
+                        scale = "0",
+                        offsetx = "0",
+                        offsety = "0"
+                    },
+                    alignment = "centre"
+                },
+                text = {
+                    scale = "14",
+                    offset = {
+                        x = "2",
+                        y = "6"
+                    }
+                },
+                outline = {
+                    width = "0",
+                    color = "000000"
+                },
+                size = {
+                    width = "450",
+                    height = "33",
+                    options = "15",
+                    spacer = "12",
+                    scrollbar = "15",
+                    override = "450"
+                },
+                font = "chaletcomprimecolognesixty"
+            }
+            dx = {
+                header = {
+                    state = "image",
+                    height = "111",
+                    offset = {
+                        x = "0",
+                        y = "0"
+                    },
+                    animated = true,
+                    frame_count = "50",
+                    delay = "0.05",
+                    restart_delay = "1"
+                },
+                overlay = {
+                    active = false
+                },
+                subheader = {
+                    active = true,
+                    height = "35"
+                },
+                footer = {
+                    active = true,
+                    height = "37"
+                },
+                activecursor = {
+                    active = true,
+                    anchor = "footer",
+                    size = "12",
+                    offset = {
+                        x = "-7",
+                        y = "5"
+                    },
+                    alignment = ALIGN_BOTTOM_LEFT,
+                    color = {
+                        r = "255",
+                        g = "255",
+                        b = "255"
+                    }
+                },
+                scrollbar = {
+                    active = true
+                },
+                border = {
+                    active = false,
+                    width = "0",
+                    color = {
+                        r = "0",
+                        g = "0",
+                        b = "0"
+                    }
+                }
+            }
+       break
+       case "Paragon":
+            theme = {
+                name = "Paragon",
+                dirname = "Paragon",
+                position = {
+                    x = "60",
+                    y = "226"
+                },
+                color = {
+                    background = "1E1E20FF",
+                    selected = "56595BFF",
+                    focused = "000000FF",
+                    unfocused = "FFFFFF"
+                },
+                tabs = {
+                    state = "off",
+                    width = "0",
+                    height = "0",
+                    position = "top",
+                    text = {
+                        scale = "0",
+                        offsetx = "0",
+                        offsety = "0"
+                    },
+                    alignment = "centre"
+                },
+                text = {
+                    scale = "14",
+                    offset = {
+                        x = "1",
+                        y = "8"
+                    }
+                },
+                outline = {
+                    width = "2",
+                    color = "4995EDFF"
+                },
+                size = {
+                    width = "508",
+                    height = "38",
+                    options = "16",
+                    spacer = "0",
+                    scrollbar = "0",
+                    override = "508"
+                },
+                font = "chaletlondonnineteensixty"
+            }
+            dx = {
+                header = {
+                    state = "image",
+                    height = "128",
+                    offset = {
+                        x = "2",
+                        y = "0"
+                    },
+                    animated = false,
+                    frame_count = "0",
+                    delay = "0",
+                    restart_delay = "0"
+                },
+                overlay = {
+                    active = false
+                },
+                subheader = {
+                    active = true,
+                    height = "38"
+                },
+                footer = {
+                    active = true,
+                    height = "38"
+                },
+                activecursor = {
+                    active = true,
+                    anchor = "header",
+                    size = "13",
+                    offset = {
+                        x = "-498",
+                        y = "9"
+                    },
+                    alignment = ALIGN_BOTTOM_RIGHT,
+                    color = {
+                        r = "255",
+                        g = "255",
+                        b = "255"
+                    }
+                },
+                scrollbar = {
+                    active = false
+                },
+                border = {
+                    active = true,
+                    width = "2",
+                    color = {
+                        r = "72",
+                        g = "148",
+                        b = "234"
+                    }
+                }
+            }
+       break
+       case "Luna":
+            theme = {
+                name = "Luna",
+                dirname = "Luna",
+                position = {
+                    x = "180",
+                    y = "220"
+                },
+                color = {
+                    background = "000000C8",
+                    selected = "FFFFFFFF",
+                    focused = "000000FF",
+                    unfocused = "FFFFFF"
+                },
+                tabs = {
+                    state = "off",
+                    width = "0",
+                    height = "0",
+                    position = "top",
+                    text = {
+                        scale = "0",
+                        offsetx = "0",
+                        offsety = "0"
+                    },
+                    alignment = "centre"
+                },
+                text = {
+                    scale = "13",
+                    offset = {
+                        x = "-1",
+                        y = "7"
+                    }
+                },
+                outline = {
+                    width = "0",
+                    color = "000000"
+                },
+                size = {
+                    width = "440",
+                    height = "32",
+                    options = "12",
+                    spacer = "0",
+                    scrollbar = "0",
+                    override = "440"
+                },
+                font = "calibri"
+            }
+            dx = {
+                header = {
+                    state = "image",
+                    height = "125",
+                    offset = {
+                        x = "0",
+                        y = "0"
+                    },
+                    animated = false,
+                    frame_count = "0",
+                    delay = "0",
+                    restart_delay = "0"
+                },
+                overlay = {
+                    active = false
+                },
+                subheader = {
+                    active = true,
+                    height = "34"
+                },
+                footer = {
+                    active = true,
+                    height = "34"
+                },
+                activecursor = {
+                    active = true,
+                    anchor = "header",
+                    size = "12",
+                    offset = {
+                        x = "-432",
+                        y = "7"
+                    },
+                    alignment = ALIGN_BOTTOM_RIGHT,
+                    color = {
+                        r = "255",
+                        g = "255",
+                        b = "255"
+                    }
+                },
+                scrollbar = {
+                    active = false
+                },
+                border = {
+                    active = false,
+                    width = "0",
+                    color = {
+                        r = "0",
+                        g = "0",
+                        b = "0"
+                    }
+                }
+            }
+       break
+       case "Kiddions":
+            theme = {
+                name = "Kiddions",
+                dirname = "Kiddions",
+                position = {
+                    x = "240",
+                    y = "40"
+                },
+                color = {
+                    background = "304C5BF0",
+                    selected = "DBCA7FFF",
+                    focused = "50575BFF",
+                    unfocused = "F2F2F2FF"
+                },
+                tabs = {
+                    state = "off",
+                    width = "0",
+                    height = "0",
+                    position = "top",
+                    text = {
+                        scale = "0",
+                        offsetx = "0",
+                        offsety = "0"
+                    },
+                    alignment = "centre"
+                },
+                text = {
+                    scale = "12",
+                    offset = {
+                        x = "0",
+                        y = "-2"
+                    }
+                },
+                outline = {
+                    width = "0",
+                    color = "000000"
+                },
+                size = {
+                    width = "350",
+                    height = "21",
+                    options = "40",
+                    spacer = "0",
+                    scrollbar = "0",
+                    override = "350"
+                },
+                font = "segoeuisemibold"
+            }
+            dx = {
+                header = {
+                    state = "image",
+                    height = "20",
+                    offset = {
+                        x = "0",
+                        y = "0"
+                    },
+                    animated = false,
+                    frame_count = "0",
+                    delay = "0",
+                    restart_delay = "0"
+                },
+                overlay = {
+                    active = false
+                },
+                subheader = {
+                    active = false,
+                    height = "0"
+                },
+                footer = {
+                    active = false,
+                    height = "0"
+                },
+                activecursor = {
+                    active = false,
+                    anchor = "header",
+                    size = "0",
+                    offset = {
+                        x = "0",
+                        y = "0"
+                    },
+                    alignment = ALIGN_BOTTOM_RIGHT,
+                    color = {
+                        r = "255",
+                        g = "255",
+                        b = "255"
+                    }
+                },
+                scrollbar = {
+                    active = false
+                },
+                border = {
+                    active = false,
+                    width = "0",
+                    color = {
+                        r = "0",
+                        g = "0",
+                        b = "0"
+                    }
+                }
+            }
+       break
+       case "Ozark":
+            theme = {
+                name = "Ozark",
+                dirname = "Interaction",
+                position = {
+                    x = "215",
+                    y = "315"
+                },
+                color = {
+                    background = "000000B4",
+                    selected = "FFFFFFFF",
+                    focused = "000000FF",
+                    unfocused = "FFFFFFFF"
+                },
+                tabs = {
+                    state = "off",
+                    width = "0",
+                    height = "0",
+                    position = "top",
+                    text = {
+                        scale = "0",
+                        offsetx = "0",
+                        offsety = "0"
+                    },
+                    alignment = "centre"
+                },
+                text = {
+                    scale = "14",
+                    offset = {
+                        x = "1",
+                        y = "7"
+                    }
+                },
+                outline = {
+                    width = "0",
+                    color = "000000"
+                },
+                size = {
+                    width = "432",
+                    height = "38",
+                    options = "10",
+                    spacer = "0",
+                    scrollbar = "0",
+                    override = "432"
+                },
+                font = "chaletlondonnineteensixty"
+            }
+            dx = {
+                header = {
+                    state = "image",
+                    height = "108",
+                    offset = {
+                        x = "0",
+                        y = "0"
+                    },
+                    animated = true,
+                    frame_count = "18",
+                    delay = "0.05",
+                    restart_delay = "8"
+                },
+                overlay = {
+                    active = true
+                },
+                subheader = {
+                    active = true,
+                    height = "37"
+                },
+                footer = {
+                    active = false,
+                    height = "0"
+                },
+                activecursor = {
+                    active = true,
+                    anchor = "header",
+                    size = "14",
+                    offset = {
+                        x = "-422",
+                        y = "7"
+                    },
+                    alignment = ALIGN_BOTTOM_RIGHT,
+                    color = {
+                        r = "255",
+                        g = "255",
+                        b = "255"
+                    }
+                },
+                scrollbar = {
+                    active = false
+                },
+                border = {
+                    active = false,
+                    width = "0",
+                    color = {
+                        r = "0",
+                        g = "0",
+                        b = "0"
+                    }
+                }
+            }
+       break
+       case "Phantom-X":
+            theme = {
+                name = "Phantom-X",
+                dirname = "Phantom-X",
+                position = {
+                    x = "190",
+                    y = "290"
+                },
+                color = {
+                    background = "000000C8",
+                    selected = "6A6280",
+                    focused = "000000FF",
+                    unfocused = "FFFFFFFF"
+                },
+                tabs = {
+                    state = "off",
+                    width = "0",
+                    height = "0",
+                    position = "top",
+                    text = {
+                        scale = "0",
+                        offsetx = "0",
+                        offsety = "0"
+                    },
+                    alignment = "centre"
+                },
+                text = {
+                    scale = "17",
+                    offset = {
+                        x = "0",
+                        y = "5"
+                    }
+                },
+                outline = {
+                    width = "0",
+                    color = "000000"
+                },
+                size = {
+                    width = "458",
+                    height = "34",
+                    options = "15",
+                    spacer = "12",
+                    scrollbar = "15",
+                    override = "458"
+                },
+                font = "chaletcomprimecolognesixty"
+            }
+            dx = {
+                header = {
+                    state = "image",
+                    height = "98",
+                    offset = {
+                        x = "0",
+                        y = "0"
+                    },
+                    animated = false,
+                    frame_count = "0",
+                    delay = "0",
+                    restart_delay = "0"
+                },
+                overlay = {
+                    active = false
+                },
+                subheader = {
+                    active = true,
+                    height = "31"
+                },
+                footer = {
+                    active = true,
+                    height = "31"
+                },
+                activecursor = {
+                    active = true,
+                    anchor = "footer",
+                    size = "14",
+                    offset = {
+                        x = "-6",
+                        y = "8"
+                    },
+                    alignment = ALIGN_BOTTOM_LEFT,
+                    color = {
+                        r = "255",
+                        g = "255",
+                        b = "255"
+                    }
+                },
+                scrollbar = {
+                    active = true
+                },
+                border = {
+                    active = false,
+                    width = "0",
+                    color = {
+                        r = "0",
+                        g = "0",
+                        b = "0"
+                    }
+                }
+            }
+       break
+       case "Fragment":
+            theme = {
+                name = "Fragment",
+                dirname = "Fragment",
+                position = {
+                    x = "320",
+                    y = "440"
+                },
+                color = {
+                    background = "030003D2",
+                    selected = "FFFFFFFF",
+                    focused = "000000FF",
+                    unfocused = "FFFFFFFF"
+                },
+                tabs = {
+                    state = "off",
+                    width = "0",
+                    height = "0",
+                    position = "top",
+                    text = {
+                        scale = "0",
+                        offsetx = "0",
+                        offsety = "0"
+                    },
+                    alignment = "centre"
+                },
+                text = {
+                    scale = "11",
+                    offset = {
+                        x = "2",
+                        y = "5"
+                    }
+                },
+                outline = {
+                    width = "0",
+                    color = "000000"
+                },
+                size = {
+                    width = "384",
+                    height = "28",
+                    options = "13",
+                    spacer = "0",
+                    scrollbar = "0",
+                    override = "384"
+                },
+                font = "robotomedium"
+            }
+            dx = {
+                header = {
+                    state = "image",
+                    height = "70",
+                    offset = {
+                        x = "0",
+                        y = "0"
+                    },
+                    animated = false,
+                    frame_count = "0",
+                    delay = "0",
+                    restart_delay = "0"
+                },
+                overlay = {
+                    active = false
+                },
+                subheader = {
+                    active = true,
+                    height = "59"
+                },
+                footer = {
+                    active = true,
+                    height = "59"
+                },
+                activecursor = {
+                    active = false,
+                    anchor = "footer",
+                    size = "0",
+                    offset = {
+                        x = "0",
+                        y = "0"
+                    },
+                    alignment = ALIGN_BOTTOM_LEFT,
+                    color = {
+                        r = "255",
+                        g = "255",
+                        b = "255"
+                    }
+                },
+                scrollbar = {
+                    active = false
+                },
+                border = {
+                    active = false,
+                    width = "0",
+                    color = {
+                        r = "0",
+                        g = "0",
+                        b = "0"
+                    }
+                }
+            }
+       break
+       case "Rebound":
+            theme = {
+                name = "Rebound",
+                dirname = "Rebound",
+                position = {
+                    x = "150",
+                    y = "230"
+                },
+                color = {
+                    background = "00000096",
+                    selected = "FF783AFF",
+                    focused = "000000FF",
+                    unfocused = "FFFFFFFF"
+                },
+                tabs = {
+                    state = "off",
+                    width = "0",
+                    height = "0",
+                    position = "top",
+                    text = {
+                        scale = "0",
+                        offsetx = "0",
+                        offsety = "0"
+                    },
+                    alignment = "centre"
+                },
+                text = {
+                    scale = "14",
+                    offset = {
+                        x = "1",
+                        y = "7"
+                    }
+                },
+                outline = {
+                    width = "0",
+                    color = "000000"
+                },
+                size = {
+                    width = "460",
+                    height = "35",
+                    options = "12",
+                    spacer = "0",
+                    scrollbar = "0",
+                    override = "460"
+                },
+                font = "chaletlondonnineteensixty"
+            }
+            dx = {
+                header = {
+                    state = "image",
+                    height = "102",
+                    offset = {
+                        x = "0",
+                        y = "0"
+                    },
+                    animated = false,
+                    frame_count = "0",
+                    delay = "0",
+                    restart_delay = "0"
+                },
+                overlay = {
+                    active = false
+                },
+                subheader = {
+                    active = true,
+                    height = "35"
+                },
+                footer = {
+                    active = true,
+                    height = "35"
+                },
+                activecursor = {
+                    active = true,
+                    anchor = "header",
+                    size = "14",
+                    offset = {
+                        x = "-450",
+                        y = "7"
+                    },
+                    alignment = ALIGN_BOTTOM_RIGHT,
+                    color = {
+                        r = "255",
+                        g = "255",
+                        b = "255"
+                    }
+                },
+                scrollbar = {
+                    active = false
+                },
+                border = {
+                    active = false,
+                    width = "0",
+                    color = {
+                        r = "0",
+                        g = "0",
+                        b = "0"
+                    }
+                }
+            }
+       break
+       case "X-Force":
+            theme = {
+                name = "X-Force",
+                dirname = "X-Force",
+                position = {
+                    x = "1240",
+                    y = "350"
+                },
+                color = {
+                    background = "00000096",
+                    selected = "35896CFF",
+                    focused = "000000FF",
+                    unfocused = "FFFFFF"
+                },
+                tabs = {
+                    state = "off",
+                    width = "0",
+                    height = "0",
+                    position = "top",
+                    text = {
+                        scale = "0",
+                        offsetx = "0",
+                        offsety = "0"
+                    },
+                    alignment = "centre"
+                },
+                text = {
+                    scale = "13",
+                    offset = {
+                        x = "2",
+                        y = "5"
+                    }
+                },
+                outline = {
+                    width = "0",
+                    color = "000000"
+                },
+                size = {
+                    width = "504",
+                    height = "31",
+                    options = "14",
+                    spacer = "0",
+                    scrollbar = "0",
+                    override = "504"
+                },
+                font = "chaletlondonnineteensixty"
+            }
+            dx = {
+                header = {
+                    state = "image",
+                    height = "122",
+                    offset = {
+                        x = "0",
+                        y = "0"
+                    },
+                    animated = false,
+                    frame_count = "0",
+                    delay = "0",
+                    restart_delay = "0"
+                },
+                overlay = {
+                    active = false
+                },
+                subheader = {
+                    active = true,
+                    height = "31"
+                },
+                footer = {
+                    active = true,
+                    height = "31"
+                },
+                activecursor = {
+                    active = true,
+                    anchor = "header",
+                    size = "12",
+                    offset = {
+                        x = "-492",
+                        y = "7"
+                    },
+                    alignment = ALIGN_BOTTOM_RIGHT,
+                    color = {
+                        r = "255",
+                        g = "255",
+                        b = "255"
+                    }
+                },
+                scrollbar = {
+                    active = false
+                },
+                border = {
+                    active = false,
+                    width = "0",
+                    color = {
+                        r = "0",
+                        g = "0",
+                        b = "0"
+                    }
+                }
+            }
+       break
+       case "Circuit":
+            theme = {
+                name = "Circuit",
+                dirname = "Circuit",
+                position = {
+                    x = "32",
+                    y = "165"
+                },
+                color = {
+                    background = "000000C8",
+                    selected = "606060FF",
+                    focused = "000000FF",
+                    unfocused = "AAAAAAFF"
+                },
+                tabs = {
+                    state = "off",
+                    width = "0",
+                    height = "0",
+                    position = "top",
+                    text = {
+                        scale = "0",
+                        offsetx = "0",
+                        offsety = "0"
+                    },
+                    alignment = "centre"
+                },
+                text = {
+                    scale = "13",
+                    offset = {
+                        x = "-1",
+                        y = "4"
+                    }
+                },
+                outline = {
+                    width = "0",
+                    color = "000000"
+                },
+                size = {
+                    width = "412",
+                    height = "31",
+                    options = "13",
+                    spacer = "0",
+                    scrollbar = "0",
+                    override = "408"
+                },
+                font = "calibri"
+            }
+            dx = {
+                header = {
+                    state = "image",
+                    height = "101",
+                    offset = {
+                        x = "2",
+                        y = "0"
+                    },
+                    animated = false,
+                    frame_count = "0",
+                    delay = "0",
+                    restart_delay = "0"
+                },
+                overlay = {
+                    active = false
+                },
+                subheader = {
+                    active = true,
+                    height = "34"
+                },
+                footer = {
+                    active = true,
+                    height = "35"
+                },
+                activecursor = {
+                    active = true,
+                    anchor = "header",
+                    size = "12",
+                    offset = {
+                        x = "-400",
+                        y = "9"
+                    },
+                    alignment = ALIGN_BOTTOM_RIGHT,
+                    color = {
+                        r = "191",
+                        g = "191",
+                        b = "191"
+                    }
+                },
+                scrollbar = {
+                    active = false
+                },
+                border = {
+                    active = true,
+                    width = "2",
+                    color = {
+                        r = "0",
+                        g = "0",
+                        b = "0"
+                    }
+                }
+            }
+       break
+       case "Terror":
+            theme = {
+                name = "Terror",
+                dirname = "Terror",
+                position = {
+                    x = "32",
+                    y = "165"
+                },
+                color = {
+                    background = "000000C8",
+                    selected = "C1010196",
+                    focused = "000000FF",
+                    unfocused = "FFFFFF"
+                },
+                tabs = {
+                    state = "off",
+                    width = "0",
+                    height = "0",
+                    position = "top",
+                    text = {
+                        scale = "0",
+                        offsetx = "0",
+                        offsety = "0"
+                    },
+                    alignment = "centre"
+                },
+                text = {
+                    scale = "22",
+                    offset = {
+                        x = "-1",
+                        y = "3"
+                    }
+                },
+                outline = {
+                    width = "0",
+                    color = "000000"
+                },
+                size = {
+                    width = "442",
+                    height = "38",
+                    options = "17",
+                    spacer = "0",
+                    scrollbar = "0",
+                    override = "442"
+                },
+                font = "chaletcomprimecolognesixty"
+            }
+            dx = {
+                header = {
+                    state = "image",
+                    height = "91",
+                    offset = {
+                        x = "0",
+                        y = "0"
+                    },
+                    animated = false,
+                    frame_count = "0",
+                    delay = "0",
+                    restart_delay = "0"
+                },
+                overlay = {
+                    active = false
+                },
+                subheader = {
+                    active = true,
+                    height = "39"
+                },
+                footer = {
+                    active = true,
+                    height = "39"
+                },
+                activecursor = {
+                    active = true,
+                    anchor = "header",
+                    size = "24",
+                    offset = {
+                        x = "-400",
+                        y = "9"
+                    },
+                    alignment = ALIGN_BOTTOM_RIGHT,
+                    color = {
+                        r = "255",
+                        g = "255",
+                        b = "255"
+                    }
+                },
+                scrollbar = {
+                    active = false
+                },
+                border = {
+                    active = false,
+                    width = "0",
+                    color = {
+                        r = "0",
+                        g = "0",
+                        b = "0"
+                    }
+                }
+            }
+       break
+       case "XCheats":
+            theme = {
+                name = "XCheats",
+                dirname = "XCheats",
+                position = {
+                    x = "1430",
+                    y = "160"
+                },
+                color = {
+                    background = "000000E1",
+                    selected = "6F7375FF",
+                    focused = "000000FF",
+                    unfocused = "FFFFFF"
+                },
+                tabs = {
+                    state = "off",
+                    width = "0",
+                    height = "0",
+                    position = "top",
+                    text = {
+                        scale = "0",
+                        offsetx = "0",
+                        offsety = "0"
+                    },
+                    alignment = "centre"
+                },
+                text = {
+                    scale = "14",
+                    offset = {
+                        x = "-1",
+                        y = "8"
+                    }
+                },
+                outline = {
+                    width = "0",
+                    color = "000000"
+                },
+                size = {
+                    width = "370",
+                    height = "36",
+                    options = "10",
+                    spacer = "0",
+                    scrollbar = "0",
+                    override = "365"
+                },
+                font = "chaletlondonnineteensixty"
+            }
+            dx = {
+                header = {
+                    state = "image",
+                    height = "85",
+                    offset = {
+                        x = "3",
+                        y = "0"
+                    },
+                    animated = false,
+                    frame_count = "0",
+                    delay = "0",
+                    restart_delay = "0"
+                },
+                overlay = {
+                    active = false
+                },
+                subheader = {
+                    active = true,
+                    height = "30"
+                },
+                footer = {
+                    active = true,
+                    height = "30"
+                },
+                activecursor = {
+                    active = true,
+                    anchor = "header",
+                    size = "12",
+                    offset = {
+                        x = "-355",
+                        y = "4"
+                    },
+                    alignment = ALIGN_BOTTOM_RIGHT,
+                    color = {
+                        r = "255",
+                        g = "255",
+                        b = "255"
+                    }
+                },
+                scrollbar = {
+                    active = false
+                },
+                border = {
+                    active = true,
+                    width = "3",
+                    color = {
+                        r = "0",
+                        g = "0",
+                        b = "0"
+                    }
+                }
+            }
+       break
+       case "Serendipity":
+            theme = {
+                name = "Serendipity",
+                dirname = "Serendipity",
+                position = {
+                    x = "1302",
+                    y = "190"
+                },
+                color = {
+                    background = "00000000",
+                    selected = "000000",
+                    focused = "FFFFFF",
+                    unfocused = "FFFFFF"
+                },
+                tabs = {
+                    state = "off",
+                    width = "0",
+                    height = "0",
+                    position = "top",
+                    text = {
+                        scale = "0",
+                        offsetx = "0",
+                        offsety = "0"
+                    },
+                    alignment = "centre"
+                },
+                text = {
+                    scale = "20",
+                    offset = {
+                        x = "-3",
+                        y = "1"
+                    }
+                },
+                outline = {
+                    width = "0",
+                    color = "000000"
+                },
+                size = {
+                    width = "479",
+                    height = "30",
+                    options = "23",
+                    spacer = "0",
+                    scrollbar = "0",
+                    override = "469"
+                },
+                font = "chaletcomprimecolognesixty"
+            }
+            dx = {
+                header = {
+                    state = "background",
+                    height = "928",
+                    offset = {
+                        x = "5",
+                        y = "120"
+                    },
+                    animated = false,
+                    frame_count = "0",
+                    delay = "0",
+                    restart_delay = "0"
+                },
+                overlay = {
+                    active = false
+                },
+                subheader = {
+                    active = false,
+                    height = "0"
+                },
+                footer = {
+                    active = false,
+                    height = "0"
+                },
+                activecursor = {
+                    active = false,
+                    anchor = "header",
+                    size = "0",
+                    offset = {
+                        x = "0",
+                        y = "0"
+                    },
+                    alignment = ALIGN_BOTTOM_RIGHT,
+                    color = {
+                        r = "255",
+                        g = "255",
+                        b = "255"
+                    }
+                },
+                scrollbar = {
+                    active = false
+                },
+                border = {
+                    active = false,
+                    width = "0",
+                    color = {
+                        r = "0",
+                        g = "0",
+                        b = "0"
+                    }
+                }
+            }
+       break
+       case "The Purge":
+            theme = {
+                name = "The Purge",
+                dirname = "The Purge",
+                position = {
+                    x = "1300",
+                    y = "335"
+                },
+                color = {
+                    background = "1E1E1EFF",
+                    selected = "FF0000FF",
+                    focused = "FFFFFF",
+                    unfocused = "FFFFFF"
+                },
+                tabs = {
+                    state = "off",
+                    width = "0",
+                    height = "0",
+                    position = "top",
+                    text = {
+                        scale = "0",
+                        offsetx = "0",
+                        offsety = "0"
+                    },
+                    alignment = "centre"
+                },
+                text = {
+                    scale = "13",
+                    offset = {
+                        x = "2",
+                        y = "5"
+                    }
+                },
+                outline = {
+                    width = "0",
+                    color = "000000"
+                },
+                size = {
+                    width = "441",
+                    height = "35",
+                    options = "17",
+                    spacer = "0",
+                    scrollbar = "0",
+                    override = "441"
+                },
+                font = "chaletlondonnineteensixty"
+            }
+            dx = {
+                header = {
+                    state = "image",
+                    height = "56",
+                    offset = {
+                        x = "0",
+                        y = "0"
+                    },
+                    animated = false,
+                    frame_count = "0",
+                    delay = "0",
+                    restart_delay = "0"
+                },
+                overlay = {
+                    active = false
+                },
+                subheader = {
+                    active = false,
+                    height = "0"
+                },
+                footer = {
+                    active = false,
+                    height = "0"
+                },
+                activecursor = {
+                    active = false,
+                    anchor = "header",
+                    size = "0",
+                    offset = {
+                        x = "0",
+                        y = "0"
+                    },
+                    alignment = ALIGN_BOTTOM_RIGHT,
+                    color = {
+                        r = "255",
+                        g = "255",
+                        b = "255"
+                    }
+                },
+                scrollbar = {
+                    active = false
+                },
+                border = {
+                    active = false,
+                    width = "0",
+                    color = {
+                        r = "0",
+                        g = "0",
+                        b = "0"
+                    }
+                }
+            }
+       break
+       case "Epsilon":
+            theme = {
+                name = "Epsilon",
+                dirname = "Interaction",
+                position = {
+                    x = "1360",
+                    y = "195"
+                },
+                color = {
+                    background = "00000096",
+                    selected = "FFFFFFFF",
+                    focused = "000000FF",
+                    unfocused = "FFFFFF"
+                },
+                tabs = {
+                    state = "off",
+                    width = "0",
+                    height = "0",
+                    position = "top",
+                    text = {
+                        scale = "0",
+                        offsetx = "0",
+                        offsety = "0"
+                    },
+                    alignment = "centre"
+                },
+                text = {
+                    scale = "14",
+                    offset = {
+                        x = "0",
+                        y = "5"
+                    }
+                },
+                outline = {
+                    width = "0",
+                    color = "000000"
+                },
+                size = {
+                    width = "432",
+                    height = "30",
+                    options = "15",
+                    spacer = "0",
+                    scrollbar = "0",
+                    override = "432"
+                },
+                font = "chaletlondonnineteensixty"
+            }
+            dx = {
+                header = {
+                    state = "image",
+                    height = "108",
+                    offset = {
+                        x = "0",
+                        y = "0"
+                    },
+                    animated = true,
+                    frame_count = "18",
+                    delay = "0.05",
+                    restart_delay = "8",
+                    interaction_header = true
+                },
+                overlay = {
+                    active = true
+                },
+                subheader = {
+                    active = true,
+                    height = "28"
+                },
+                footer = {
+                    active = true,
+                    height = "30"
+                },
+                activecursor = {
+                    active = false,
+                    anchor = "header",
+                    size = "0",
+                    offset = {
+                        x = "0",
+                        y = "0"
+                    },
+                    alignment = ALIGN_BOTTOM_RIGHT,
+                    color = {
+                        r = "255",
+                        g = "255",
+                        b = "255"
+                    }
+                },
+                scrollbar = {
+                    active = false
+                },
+                border = {
+                    active = false,
+                    width = "0",
+                    color = {
+                        r = "0",
+                        g = "0",
+                        b = "0"
+                    }
+                }
+            }
+       break
+    end
+
+    download_theme(theme, dx)
+    use_theme(theme.name)
+end)
+
+root:action("Reset theme", {}, "", function()
+    use_default_theme()
+end)
+
 function download_theme(theme, dx)
     local name = theme.name
 
@@ -127,9 +1768,7 @@ function download_theme(theme, dx)
             file:close()
         end)
         async_http.dispatch()
-    end
-
-    if dx.header.animated then
+    else
         for i = 1, dx.header.frame_count do
             local done = false
             async_http.init(github_url, repo_url .. name .. "/Header" .. i .. ".bmp", function(header_file)
@@ -162,7 +1801,7 @@ function download_theme(theme, dx)
         end
 
         local missing = false
-        -- there is probably a better way to do this
+        --  there is probably a better way to do this
         for i, path in ipairs(filesystem.list_files(header_path)) do
             if not filesystem.exists(header_path .. "Header1.bmp") then
                 missing = true
@@ -245,7 +1884,6 @@ function download_theme(theme, dx)
         menu.trigger_commands("reloadfont")
     end)
     async_http.dispatch()
-
 end
 
 function use_theme(name)
@@ -271,7 +1909,8 @@ function use_theme(name)
 
     menu.trigger_command(menu.ref_by_path("Stand>Settings>Appearance>Scrollbar>Scrollbar>" ..
                                               (dx.scrollbar.active == false and "Disabled" or "Enabled")))
-    menu.trigger_commands("addressbar hide; " .. (name == "Stand" and "addressbar;" or "") .. "clearstandnotifys;")
+    menu.trigger_commands("addressbar hide; " .. (name == "Stand" and "addressbar;" or "") .. "clearstandnotifys;") 
+    menu.trigger_command(menu.ref_by_path("Stand>Lua Scripts>RTL"))
 
     if dx.header.animated == true then
         headersDX = directx.create_texture(script_dir .. "\\" .. theme.name .. "\\" .. theme.dirname .. "\\Header1.bmp")
@@ -291,9 +1930,9 @@ function use_theme(name)
         footerDX = directx.create_texture(script_dir .. "\\" .. theme.name .. "\\Footer.bmp")
     end
 
-    -- idk what this is
+    --  idk what this is
     -- if dx.scrollbar.active == true then
-    -- scrollbarDX = directx.create_texture(filesystem.scripts_dir() .. "RTL/UniversalScrollbar.bmp")
+    --     scrollbarDX = directx.create_texture(filesystem.scripts_dir() .. "RTL/UniversalScrollbar.bmp")
     -- end
 
     util.create_tick_handler(function()
@@ -366,12 +2005,12 @@ function use_theme(name)
         end
     end)
 
-    util.create_tick_handler(function()
-        if theme.name ~= name then
-            return false
-        end
-
-        if dx.header.animated == true then
+    if dx.header.animated then
+        util.create_tick_handler(function()
+            if theme.name ~= name then
+                return false
+            end
+    
             for i = 1, dx.header.frame_count do
                 if theme.name ~= name then
                     return false
@@ -382,10 +2021,8 @@ function use_theme(name)
             end
 
             util.yield(dx.header.restart_delay * 1000)
-        else
-            return false
-        end
-    end)
+        end)
+    end
 end
 
 function use_default_theme()
@@ -491,1642 +2128,4 @@ function use_default_theme()
     use_theme(theme.name)
 end
 
-root:action("Reset theme", {}, "", function()
-    -- todo: default theme assets
-    use_default_theme()
-end)
-
-root:action("2Take1", {}, "", function()
-    theme = {
-        name = "2Take1",
-        dirname = "2Take1",
-        position = {
-            x = "1220",
-            y = "220"
-        },
-        color = {
-            background = "00000096",
-            selected = "FFFFFFFF",
-            focused = "000000FF",
-            unfocused = "FFFFFF"
-        },
-        tabs = {
-            state = "on",
-            width = "69",
-            height = "44",
-            position = "top",
-            text = {
-                scale = "15",
-                offsetx = "-2",
-                offsety = "9"
-            },
-            alignment = "centre"
-        },
-        text = {
-            scale = "13",
-            offset = {
-                x = "1",
-                y = "10"
-            }
-        },
-        outline = {
-            width = "0",
-            color = "000000"
-        },
-        size = {
-            width = "483",
-            height = "46",
-            options = "10",
-            spacer = "0",
-            scrollbar = "0",
-            override = "483"
-        },
-        font = "chaletlondonnineteensixty"
-    }
-    dx = {
-        header = {
-            state = "image",
-            height = "83",
-            offset = {
-                x = "0",
-                y = "0"
-            },
-            animated = false,
-            frame_count = "0",
-            delay = "0",
-            restart_delay = "0"
-        },
-        overlay = {
-            active = false
-        },
-        subheader = {
-            active = false,
-            height = "0"
-        },
-        footer = {
-            active = true,
-            height = "31"
-        },
-        activecursor = {
-            active = false,
-            anchor = "header",
-            size = "0",
-            offset = {
-                x = "0",
-                y = "0"
-            },
-            alignment = ALIGN_BOTTOM_LEFT,
-            color = {
-                r = "0",
-                g = "0",
-                b = "0"
-            }
-        },
-        scrollbar = {
-            active = false
-        },
-        border = {
-            active = false,
-            width = "0",
-            color = {
-                r = "0",
-                g = "0",
-                b = "0"
-            }
-        }
-    }
-    download_theme(theme, dx)
-    use_theme(theme.name)
-end)
-root:action("Impulse", {}, "", function()
-    theme = {
-        name = "Impulse",
-        dirname = "Impulse",
-        position = {
-            x = "80",
-            y = "200"
-        },
-        color = {
-            background = "060A14C8",
-            selected = "1DA1A5FF",
-            focused = "000000FF",
-            unfocused = "FFFFFF"
-        },
-        tabs = {
-            state = "off",
-            width = "0",
-            height = "0",
-            position = "top",
-            text = {
-                scale = "0",
-                offsetx = "0",
-                offsety = "0"
-            },
-            alignment = "centre"
-        },
-        text = {
-            scale = "14",
-            offset = {
-                x = "2",
-                y = "6"
-            }
-        },
-        outline = {
-            width = "0",
-            color = "000000"
-        },
-        size = {
-            width = "450",
-            height = "33",
-            options = "15",
-            spacer = "12",
-            scrollbar = "15",
-            override = "450"
-        },
-        font = "chaletcomprimecolognesixty"
-    }
-    dx = {
-        header = {
-            state = "image",
-            height = "111",
-            offset = {
-                x = "0",
-                y = "0"
-            },
-            animated = true,
-            frame_count = "50",
-            delay = "0.05",
-            restart_delay = "1"
-        },
-        overlay = {
-            active = false
-        },
-        subheader = {
-            active = true,
-            height = "35"
-        },
-        footer = {
-            active = true,
-            height = "37"
-        },
-        activecursor = {
-            active = true,
-            anchor = "footer",
-            size = "12",
-            offset = {
-                x = "-7",
-                y = "5"
-            },
-            alignment = ALIGN_BOTTOM_LEFT,
-            color = {
-                r = "255",
-                g = "255",
-                b = "255"
-            }
-        },
-        scrollbar = {
-            active = true
-        },
-        border = {
-            active = false,
-            width = "0",
-            color = {
-                r = "0",
-                g = "0",
-                b = "0"
-            }
-        }
-    }
-    download_theme(theme, dx)
-    use_theme(theme.name)
-end)
-root:action("Paragon", {}, "", function()
-    theme = {
-        name = "Paragon",
-        dirname = "Paragon",
-        position = {
-            x = "60",
-            y = "226"
-        },
-        color = {
-            background = "1E1E20FF",
-            selected = "56595BFF",
-            focused = "000000FF",
-            unfocused = "FFFFFF"
-        },
-        tabs = {
-            state = "off",
-            width = "0",
-            height = "0",
-            position = "top",
-            text = {
-                scale = "0",
-                offsetx = "0",
-                offsety = "0"
-            },
-            alignment = "centre"
-        },
-        text = {
-            scale = "14",
-            offset = {
-                x = "1",
-                y = "8"
-            }
-        },
-        outline = {
-            width = "2",
-            color = "4995EDFF"
-        },
-        size = {
-            width = "508",
-            height = "38",
-            options = "16",
-            spacer = "0",
-            scrollbar = "0",
-            override = "508"
-        },
-        font = "chaletlondonnineteensixty"
-    }
-    dx = {
-        header = {
-            state = "image",
-            height = "128",
-            offset = {
-                x = "2",
-                y = "0"
-            },
-            animated = false,
-            frame_count = "0",
-            delay = "0",
-            restart_delay = "0"
-        },
-        overlay = {
-            active = false
-        },
-        subheader = {
-            active = true,
-            height = "38"
-        },
-        footer = {
-            active = true,
-            height = "38"
-        },
-        activecursor = {
-            active = true,
-            anchor = "header",
-            size = "13",
-            offset = {
-                x = "-498",
-                y = "9"
-            },
-            alignment = ALIGN_BOTTOM_RIGHT,
-            color = {
-                r = "255",
-                g = "255",
-                b = "255"
-            }
-        },
-        scrollbar = {
-            active = false
-        },
-        border = {
-            active = true,
-            width = "2",
-            color = {
-                r = "72",
-                g = "148",
-                b = "234"
-            }
-        }
-    }
-    download_theme(theme, dx)
-    use_theme(theme.name)
-end)
-root:action("Luna", {}, "", function()
-    theme = {
-        name = "Luna",
-        dirname = "Luna",
-        position = {
-            x = "180",
-            y = "220"
-        },
-        color = {
-            background = "000000C8",
-            selected = "FFFFFFFF",
-            focused = "000000FF",
-            unfocused = "FFFFFF"
-        },
-        tabs = {
-            state = "off",
-            width = "0",
-            height = "0",
-            position = "top",
-            text = {
-                scale = "0",
-                offsetx = "0",
-                offsety = "0"
-            },
-            alignment = "centre"
-        },
-        text = {
-            scale = "13",
-            offset = {
-                x = "-1",
-                y = "7"
-            }
-        },
-        outline = {
-            width = "0",
-            color = "000000"
-        },
-        size = {
-            width = "440",
-            height = "32",
-            options = "12",
-            spacer = "0",
-            scrollbar = "0",
-            override = "440"
-        },
-        font = "calibri"
-    }
-    dx = {
-        header = {
-            state = "image",
-            height = "125",
-            offset = {
-                x = "0",
-                y = "0"
-            },
-            animated = false,
-            frame_count = "0",
-            delay = "0",
-            restart_delay = "0"
-        },
-        overlay = {
-            active = false
-        },
-        subheader = {
-            active = true,
-            height = "34"
-        },
-        footer = {
-            active = true,
-            height = "34"
-        },
-        activecursor = {
-            active = true,
-            anchor = "header",
-            size = "12",
-            offset = {
-                x = "-432",
-                y = "7"
-            },
-            alignment = ALIGN_BOTTOM_RIGHT,
-            color = {
-                r = "255",
-                g = "255",
-                b = "255"
-            }
-        },
-        scrollbar = {
-            active = false
-        },
-        border = {
-            active = false,
-            width = "0",
-            color = {
-                r = "0",
-                g = "0",
-                b = "0"
-            }
-        }
-    }
-    download_theme(theme, dx)
-    use_theme(theme.name)
-end)
-root:action("Kiddions", {}, "", function()
-    theme = {
-        name = "Kiddions",
-        dirname = "Kiddions",
-        position = {
-            x = "240",
-            y = "40"
-        },
-        color = {
-            background = "304C5BF0",
-            selected = "DBCA7FFF",
-            focused = "50575BFF",
-            unfocused = "F2F2F2FF"
-        },
-        tabs = {
-            state = "off",
-            width = "0",
-            height = "0",
-            position = "top",
-            text = {
-                scale = "0",
-                offsetx = "0",
-                offsety = "0"
-            },
-            alignment = "centre"
-        },
-        text = {
-            scale = "12",
-            offset = {
-                x = "0",
-                y = "-2"
-            }
-        },
-        outline = {
-            width = "0",
-            color = "000000"
-        },
-        size = {
-            width = "350",
-            height = "21",
-            options = "40",
-            spacer = "0",
-            scrollbar = "0",
-            override = "350"
-        },
-        font = "segoeuisemibold"
-    }
-    dx = {
-        header = {
-            state = "image",
-            height = "20",
-            offset = {
-                x = "0",
-                y = "0"
-            },
-            animated = false,
-            frame_count = "0",
-            delay = "0",
-            restart_delay = "0"
-        },
-        overlay = {
-            active = false
-        },
-        subheader = {
-            active = false,
-            height = "0"
-        },
-        footer = {
-            active = false,
-            height = "0"
-        },
-        activecursor = {
-            active = false,
-            anchor = "header",
-            size = "0",
-            offset = {
-                x = "0",
-                y = "0"
-            },
-            alignment = ALIGN_BOTTOM_RIGHT,
-            color = {
-                r = "255",
-                g = "255",
-                b = "255"
-            }
-        },
-        scrollbar = {
-            active = false
-        },
-        border = {
-            active = false,
-            width = "0",
-            color = {
-                r = "0",
-                g = "0",
-                b = "0"
-            }
-        }
-    }
-    download_theme(theme, dx)
-    use_theme(theme.name)
-end)
-root:action("Ozark", {}, "", function()
-    theme = {
-        name = "Ozark",
-        dirname = "Interaction",
-        position = {
-            x = "215",
-            y = "315"
-        },
-        color = {
-            background = "000000B4",
-            selected = "FFFFFFFF",
-            focused = "000000FF",
-            unfocused = "FFFFFFFF"
-        },
-        tabs = {
-            state = "off",
-            width = "0",
-            height = "0",
-            position = "top",
-            text = {
-                scale = "0",
-                offsetx = "0",
-                offsety = "0"
-            },
-            alignment = "centre"
-        },
-        text = {
-            scale = "14",
-            offset = {
-                x = "1",
-                y = "7"
-            }
-        },
-        outline = {
-            width = "0",
-            color = "000000"
-        },
-        size = {
-            width = "432",
-            height = "38",
-            options = "10",
-            spacer = "0",
-            scrollbar = "0",
-            override = "432"
-        },
-        font = "chaletlondonnineteensixty"
-    }
-    dx = {
-        header = {
-            state = "image",
-            height = "108",
-            offset = {
-                x = "0",
-                y = "0"
-            },
-            animated = true,
-            frame_count = "18",
-            delay = "0.05",
-            restart_delay = "8"
-        },
-        overlay = {
-            active = true
-        },
-        subheader = {
-            active = true,
-            height = "37"
-        },
-        footer = {
-            active = false,
-            height = "0"
-        },
-        activecursor = {
-            active = true,
-            anchor = "header",
-            size = "14",
-            offset = {
-                x = "-422",
-                y = "7"
-            },
-            alignment = ALIGN_BOTTOM_RIGHT,
-            color = {
-                r = "255",
-                g = "255",
-                b = "255"
-            }
-        },
-        scrollbar = {
-            active = false
-        },
-        border = {
-            active = false,
-            width = "0",
-            color = {
-                r = "0",
-                g = "0",
-                b = "0"
-            }
-        }
-    }
-    download_theme(theme, dx)
-    use_theme(theme.name)
-end)
-root:action("Phantom-X", {}, "", function()
-    theme = {
-        name = "Phantom-X",
-        dirname = "Phantom-X",
-        position = {
-            x = "190",
-            y = "290"
-        },
-        color = {
-            background = "000000C8",
-            selected = "6A6280",
-            focused = "000000FF",
-            unfocused = "FFFFFFFF"
-        },
-        tabs = {
-            state = "off",
-            width = "0",
-            height = "0",
-            position = "top",
-            text = {
-                scale = "0",
-                offsetx = "0",
-                offsety = "0"
-            },
-            alignment = "centre"
-        },
-        text = {
-            scale = "17",
-            offset = {
-                x = "0",
-                y = "5"
-            }
-        },
-        outline = {
-            width = "0",
-            color = "000000"
-        },
-        size = {
-            width = "458",
-            height = "34",
-            options = "15",
-            spacer = "12",
-            scrollbar = "15",
-            override = "458"
-        },
-        font = "chaletcomprimecolognesixty"
-    }
-    dx = {
-        header = {
-            state = "image",
-            height = "98",
-            offset = {
-                x = "0",
-                y = "0"
-            },
-            animated = false,
-            frame_count = "0",
-            delay = "0",
-            restart_delay = "0"
-        },
-        overlay = {
-            active = false
-        },
-        subheader = {
-            active = true,
-            height = "31"
-        },
-        footer = {
-            active = true,
-            height = "31"
-        },
-        activecursor = {
-            active = true,
-            anchor = "footer",
-            size = "14",
-            offset = {
-                x = "-6",
-                y = "8"
-            },
-            alignment = ALIGN_BOTTOM_LEFT,
-            color = {
-                r = "255",
-                g = "255",
-                b = "255"
-            }
-        },
-        scrollbar = {
-            active = true
-        },
-        border = {
-            active = false,
-            width = "0",
-            color = {
-                r = "0",
-                g = "0",
-                b = "0"
-            }
-        }
-    }
-    download_theme(theme, dx)
-    use_theme(theme.name)
-end)
-root:action("Fragment", {}, "", function()
-    theme = {
-        name = "Fragment",
-        dirname = "Fragment",
-        position = {
-            x = "320",
-            y = "440"
-        },
-        color = {
-            background = "030003D2",
-            selected = "FFFFFFFF",
-            focused = "000000FF",
-            unfocused = "FFFFFFFF"
-        },
-        tabs = {
-            state = "off",
-            width = "0",
-            height = "0",
-            position = "top",
-            text = {
-                scale = "0",
-                offsetx = "0",
-                offsety = "0"
-            },
-            alignment = "centre"
-        },
-        text = {
-            scale = "11",
-            offset = {
-                x = "2",
-                y = "5"
-            }
-        },
-        outline = {
-            width = "0",
-            color = "000000"
-        },
-        size = {
-            width = "384",
-            height = "28",
-            options = "13",
-            spacer = "0",
-            scrollbar = "0",
-            override = "384"
-        },
-        font = "robotomedium"
-    }
-    dx = {
-        header = {
-            state = "image",
-            height = "70",
-            offset = {
-                x = "0",
-                y = "0"
-            },
-            animated = false,
-            frame_count = "0",
-            delay = "0",
-            restart_delay = "0"
-        },
-        overlay = {
-            active = false
-        },
-        subheader = {
-            active = true,
-            height = "59"
-        },
-        footer = {
-            active = true,
-            height = "59"
-        },
-        activecursor = {
-            active = false,
-            anchor = "footer",
-            size = "0",
-            offset = {
-                x = "0",
-                y = "0"
-            },
-            alignment = ALIGN_BOTTOM_LEFT,
-            color = {
-                r = "255",
-                g = "255",
-                b = "255"
-            }
-        },
-        scrollbar = {
-            active = false
-        },
-        border = {
-            active = false,
-            width = "0",
-            color = {
-                r = "0",
-                g = "0",
-                b = "0"
-            }
-        }
-    }
-    download_theme(theme, dx)
-    use_theme(theme.name)
-end)
-root:action("Rebound", {}, "", function()
-    theme = {
-        name = "Rebound",
-        dirname = "Rebound",
-        position = {
-            x = "150",
-            y = "230"
-        },
-        color = {
-            background = "00000096",
-            selected = "FF783AFF",
-            focused = "000000FF",
-            unfocused = "FFFFFFFF"
-        },
-        tabs = {
-            state = "off",
-            width = "0",
-            height = "0",
-            position = "top",
-            text = {
-                scale = "0",
-                offsetx = "0",
-                offsety = "0"
-            },
-            alignment = "centre"
-        },
-        text = {
-            scale = "14",
-            offset = {
-                x = "1",
-                y = "7"
-            }
-        },
-        outline = {
-            width = "0",
-            color = "000000"
-        },
-        size = {
-            width = "460",
-            height = "35",
-            options = "12",
-            spacer = "0",
-            scrollbar = "0",
-            override = "460"
-        },
-        font = "chaletlondonnineteensixty"
-    }
-    dx = {
-        header = {
-            state = "image",
-            height = "102",
-            offset = {
-                x = "0",
-                y = "0"
-            },
-            animated = false,
-            frame_count = "0",
-            delay = "0",
-            restart_delay = "0"
-        },
-        overlay = {
-            active = false
-        },
-        subheader = {
-            active = true,
-            height = "35"
-        },
-        footer = {
-            active = true,
-            height = "35"
-        },
-        activecursor = {
-            active = true,
-            anchor = "header",
-            size = "14",
-            offset = {
-                x = "-450",
-                y = "7"
-            },
-            alignment = ALIGN_BOTTOM_RIGHT,
-            color = {
-                r = "255",
-                g = "255",
-                b = "255"
-            }
-        },
-        scrollbar = {
-            active = false
-        },
-        border = {
-            active = false,
-            width = "0",
-            color = {
-                r = "0",
-                g = "0",
-                b = "0"
-            }
-        }
-    }
-    download_theme(theme, dx)
-    use_theme(theme.name)
-end)
-root:action("X-Force", {}, "", function()
-    theme = {
-        name = "X-Force",
-        dirname = "X-Force",
-        position = {
-            x = "1240",
-            y = "350"
-        },
-        color = {
-            background = "00000096",
-            selected = "35896CFF",
-            focused = "000000FF",
-            unfocused = "FFFFFF"
-        },
-        tabs = {
-            state = "off",
-            width = "0",
-            height = "0",
-            position = "top",
-            text = {
-                scale = "0",
-                offsetx = "0",
-                offsety = "0"
-            },
-            alignment = "centre"
-        },
-        text = {
-            scale = "13",
-            offset = {
-                x = "2",
-                y = "5"
-            }
-        },
-        outline = {
-            width = "0",
-            color = "000000"
-        },
-        size = {
-            width = "504",
-            height = "31",
-            options = "14",
-            spacer = "0",
-            scrollbar = "0",
-            override = "504"
-        },
-        font = "chaletlondonnineteensixty"
-    }
-    dx = {
-        header = {
-            state = "image",
-            height = "122",
-            offset = {
-                x = "0",
-                y = "0"
-            },
-            animated = false,
-            frame_count = "0",
-            delay = "0",
-            restart_delay = "0"
-        },
-        overlay = {
-            active = false
-        },
-        subheader = {
-            active = true,
-            height = "31"
-        },
-        footer = {
-            active = true,
-            height = "31"
-        },
-        activecursor = {
-            active = true,
-            anchor = "header",
-            size = "12",
-            offset = {
-                x = "-492",
-                y = "7"
-            },
-            alignment = ALIGN_BOTTOM_RIGHT,
-            color = {
-                r = "255",
-                g = "255",
-                b = "255"
-            }
-        },
-        scrollbar = {
-            active = false
-        },
-        border = {
-            active = false,
-            width = "0",
-            color = {
-                r = "0",
-                g = "0",
-                b = "0"
-            }
-        }
-    }
-    download_theme(theme, dx)
-    use_theme(theme.name)
-end)
-root:action("Circuit", {}, "", function()
-    theme = {
-        name = "Circuit",
-        dirname = "Circuit",
-        position = {
-            x = "32",
-            y = "165"
-        },
-        color = {
-            background = "000000C8",
-            selected = "606060FF",
-            focused = "000000FF",
-            unfocused = "AAAAAAFF"
-        },
-        tabs = {
-            state = "off",
-            width = "0",
-            height = "0",
-            position = "top",
-            text = {
-                scale = "0",
-                offsetx = "0",
-                offsety = "0"
-            },
-            alignment = "centre"
-        },
-        text = {
-            scale = "13",
-            offset = {
-                x = "-1",
-                y = "4"
-            }
-        },
-        outline = {
-            width = "0",
-            color = "000000"
-        },
-        size = {
-            width = "412",
-            height = "31",
-            options = "13",
-            spacer = "0",
-            scrollbar = "0",
-            override = "408"
-        },
-        font = "calibri"
-    }
-    dx = {
-        header = {
-            state = "image",
-            height = "101",
-            offset = {
-                x = "2",
-                y = "0"
-            },
-            animated = false,
-            frame_count = "0",
-            delay = "0",
-            restart_delay = "0"
-        },
-        overlay = {
-            active = false
-        },
-        subheader = {
-            active = true,
-            height = "34"
-        },
-        footer = {
-            active = true,
-            height = "35"
-        },
-        activecursor = {
-            active = true,
-            anchor = "header",
-            size = "12",
-            offset = {
-                x = "-400",
-                y = "9"
-            },
-            alignment = ALIGN_BOTTOM_RIGHT,
-            color = {
-                r = "191",
-                g = "191",
-                b = "191"
-            }
-        },
-        scrollbar = {
-            active = false
-        },
-        border = {
-            active = true,
-            width = "2",
-            color = {
-                r = "0",
-                g = "0",
-                b = "0"
-            }
-        }
-    }
-    download_theme(theme, dx)
-    use_theme(theme.name)
-end)
-root:action("Terror", {}, "", function()
-    theme = {
-        name = "Terror",
-        dirname = "Terror",
-        position = {
-            x = "32",
-            y = "165"
-        },
-        color = {
-            background = "000000C8",
-            selected = "C1010196",
-            focused = "000000FF",
-            unfocused = "FFFFFF"
-        },
-        tabs = {
-            state = "off",
-            width = "0",
-            height = "0",
-            position = "top",
-            text = {
-                scale = "0",
-                offsetx = "0",
-                offsety = "0"
-            },
-            alignment = "centre"
-        },
-        text = {
-            scale = "22",
-            offset = {
-                x = "-1",
-                y = "3"
-            }
-        },
-        outline = {
-            width = "0",
-            color = "000000"
-        },
-        size = {
-            width = "442",
-            height = "38",
-            options = "17",
-            spacer = "0",
-            scrollbar = "0",
-            override = "442"
-        },
-        font = "chaletcomprimecolognesixty"
-    }
-    dx = {
-        header = {
-            state = "image",
-            height = "91",
-            offset = {
-                x = "0",
-                y = "0"
-            },
-            animated = false,
-            frame_count = "0",
-            delay = "0",
-            restart_delay = "0"
-        },
-        overlay = {
-            active = false
-        },
-        subheader = {
-            active = true,
-            height = "39"
-        },
-        footer = {
-            active = true,
-            height = "39"
-        },
-        activecursor = {
-            active = true,
-            anchor = "header",
-            size = "24",
-            offset = {
-                x = "-400",
-                y = "9"
-            },
-            alignment = ALIGN_BOTTOM_RIGHT,
-            color = {
-                r = "255",
-                g = "255",
-                b = "255"
-            }
-        },
-        scrollbar = {
-            active = false
-        },
-        border = {
-            active = false,
-            width = "0",
-            color = {
-                r = "0",
-                g = "0",
-                b = "0"
-            }
-        }
-    }
-    download_theme(theme, dx)
-    use_theme(theme.name)
-end)
-root:action("XCheats", {}, "", function()
-    theme = {
-        name = "XCheats",
-        dirname = "XCheats",
-        position = {
-            x = "1430",
-            y = "160"
-        },
-        color = {
-            background = "000000E1",
-            selected = "6F7375FF",
-            focused = "000000FF",
-            unfocused = "FFFFFF"
-        },
-        tabs = {
-            state = "off",
-            width = "0",
-            height = "0",
-            position = "top",
-            text = {
-                scale = "0",
-                offsetx = "0",
-                offsety = "0"
-            },
-            alignment = "centre"
-        },
-        text = {
-            scale = "14",
-            offset = {
-                x = "-1",
-                y = "8"
-            }
-        },
-        outline = {
-            width = "0",
-            color = "000000"
-        },
-        size = {
-            width = "370",
-            height = "36",
-            options = "10",
-            spacer = "0",
-            scrollbar = "0",
-            override = "365"
-        },
-        font = "chaletlondonnineteensixty"
-    }
-    dx = {
-        header = {
-            state = "image",
-            height = "85",
-            offset = {
-                x = "3",
-                y = "0"
-            },
-            animated = false,
-            frame_count = "0",
-            delay = "0",
-            restart_delay = "0"
-        },
-        overlay = {
-            active = false
-        },
-        subheader = {
-            active = true,
-            height = "30"
-        },
-        footer = {
-            active = true,
-            height = "30"
-        },
-        activecursor = {
-            active = true,
-            anchor = "header",
-            size = "12",
-            offset = {
-                x = "-355",
-                y = "4"
-            },
-            alignment = ALIGN_BOTTOM_RIGHT,
-            color = {
-                r = "255",
-                g = "255",
-                b = "255"
-            }
-        },
-        scrollbar = {
-            active = false
-        },
-        border = {
-            active = true,
-            width = "3",
-            color = {
-                r = "0",
-                g = "0",
-                b = "0"
-            }
-        }
-    }
-    download_theme(theme, dx)
-    use_theme(theme.name)
-end)
-root:action("Serendipity", {}, "", function()
-    theme = {
-        name = "Serendipity",
-        dirname = "Serendipity",
-        position = {
-            x = "1302",
-            y = "190"
-        },
-        color = {
-            background = "00000000",
-            selected = "000000",
-            focused = "FFFFFF",
-            unfocused = "FFFFFF"
-        },
-        tabs = {
-            state = "off",
-            width = "0",
-            height = "0",
-            position = "top",
-            text = {
-                scale = "0",
-                offsetx = "0",
-                offsety = "0"
-            },
-            alignment = "centre"
-        },
-        text = {
-            scale = "20",
-            offset = {
-                x = "-3",
-                y = "1"
-            }
-        },
-        outline = {
-            width = "0",
-            color = "000000"
-        },
-        size = {
-            width = "479",
-            height = "30",
-            options = "23",
-            spacer = "0",
-            scrollbar = "0",
-            override = "469"
-        },
-        font = "chaletcomprimecolognesixty"
-    }
-    dx = {
-        header = {
-            state = "background",
-            height = "928",
-            offset = {
-                x = "5",
-                y = "120"
-            },
-            animated = false,
-            frame_count = "0",
-            delay = "0",
-            restart_delay = "0"
-        },
-        overlay = {
-            active = false
-        },
-        subheader = {
-            active = false,
-            height = "0"
-        },
-        footer = {
-            active = false,
-            height = "0"
-        },
-        activecursor = {
-            active = false,
-            anchor = "header",
-            size = "0",
-            offset = {
-                x = "0",
-                y = "0"
-            },
-            alignment = ALIGN_BOTTOM_RIGHT,
-            color = {
-                r = "255",
-                g = "255",
-                b = "255"
-            }
-        },
-        scrollbar = {
-            active = false
-        },
-        border = {
-            active = false,
-            width = "0",
-            color = {
-                r = "0",
-                g = "0",
-                b = "0"
-            }
-        }
-    }
-    download_theme(theme, dx)
-    use_theme(theme.name)
-end)
-root:action("The Purge", {}, "", function()
-    theme = {
-        name = "The Purge",
-        dirname = "The Purge",
-        position = {
-            x = "1300",
-            y = "335"
-        },
-        color = {
-            background = "1E1E1EFF",
-            selected = "FF0000FF",
-            focused = "FFFFFF",
-            unfocused = "FFFFFF"
-        },
-        tabs = {
-            state = "off",
-            width = "0",
-            height = "0",
-            position = "top",
-            text = {
-                scale = "0",
-                offsetx = "0",
-                offsety = "0"
-            },
-            alignment = "centre"
-        },
-        text = {
-            scale = "13",
-            offset = {
-                x = "2",
-                y = "5"
-            }
-        },
-        outline = {
-            width = "0",
-            color = "000000"
-        },
-        size = {
-            width = "441",
-            height = "35",
-            options = "17",
-            spacer = "0",
-            scrollbar = "0",
-            override = "441"
-        },
-        font = "chaletlondonnineteensixty"
-    }
-    dx = {
-        header = {
-            state = "image",
-            height = "56",
-            offset = {
-                x = "0",
-                y = "0"
-            },
-            animated = false,
-            frame_count = "0",
-            delay = "0",
-            restart_delay = "0"
-        },
-        overlay = {
-            active = false
-        },
-        subheader = {
-            active = false,
-            height = "0"
-        },
-        footer = {
-            active = false,
-            height = "0"
-        },
-        activecursor = {
-            active = false,
-            anchor = "header",
-            size = "0",
-            offset = {
-                x = "0",
-                y = "0"
-            },
-            alignment = ALIGN_BOTTOM_RIGHT,
-            color = {
-                r = "255",
-                g = "255",
-                b = "255"
-            }
-        },
-        scrollbar = {
-            active = false
-        },
-        border = {
-            active = false,
-            width = "0",
-            color = {
-                r = "0",
-                g = "0",
-                b = "0"
-            }
-        }
-    }
-
-    download_theme(theme, dx)
-    use_theme(theme.name)
-end)
-root:action("Epsilon", {}, "", function()
-    theme = {
-        name = "Epsilon",
-        dirname = "Interaction",
-        position = {
-            x = "1360",
-            y = "195"
-        },
-        color = {
-            background = "00000096",
-            selected = "FFFFFFFF",
-            focused = "000000FF",
-            unfocused = "FFFFFF"
-        },
-        tabs = {
-            state = "off",
-            width = "0",
-            height = "0",
-            position = "top",
-            text = {
-                scale = "0",
-                offsetx = "0",
-                offsety = "0"
-            },
-            alignment = "centre"
-        },
-        text = {
-            scale = "14",
-            offset = {
-                x = "0",
-                y = "5"
-            }
-        },
-        outline = {
-            width = "0",
-            color = "000000"
-        },
-        size = {
-            width = "432",
-            height = "30",
-            options = "15",
-            spacer = "0",
-            scrollbar = "0",
-            override = "432"
-        },
-        font = "chaletlondonnineteensixty"
-    }
-    dx = {
-        header = {
-            state = "image",
-            height = "108",
-            offset = {
-                x = "0",
-                y = "0"
-            },
-            animated = true,
-            frame_count = "18",
-            delay = "0.05",
-            restart_delay = "8",
-            interaction_header = true
-        },
-        overlay = {
-            active = true
-        },
-        subheader = {
-            active = true,
-            height = "28"
-        },
-        footer = {
-            active = true,
-            height = "30"
-        },
-        activecursor = {
-            active = false,
-            anchor = "header",
-            size = "0",
-            offset = {
-                x = "0",
-                y = "0"
-            },
-            alignment = ALIGN_BOTTOM_RIGHT,
-            color = {
-                r = "255",
-                g = "255",
-                b = "255"
-            }
-        },
-        scrollbar = {
-            active = false
-        },
-        border = {
-            active = false,
-            width = "0",
-            color = {
-                r = "0",
-                g = "0",
-                b = "0"
-            }
-        }
-    }
-    download_theme(theme, dx)
-    use_theme(theme.name)
-end)
+util.keep_running()
