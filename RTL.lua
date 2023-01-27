@@ -132,7 +132,7 @@ for line in file:lines() do
     table.insert(themes_from_file, line)
 end
 
-theme_selector = menu.action_slider(menu.my_root(), "Theme", {}, "", themes_from_file, function(_, value)
+theme_selector = menu.action_slider(menu.my_root(), "Theme Selector", {}, "", themes_from_file, function(_, value)
     if current_theme ~= value then
         current_theme = value
     else
@@ -141,6 +141,8 @@ theme_selector = menu.action_slider(menu.my_root(), "Theme", {}, "", themes_from
                 current_theme = value
             end)
     end
+
+    util.toast("Downloading " .. value .. " assets")
 
     pluto_switch value do
        case "2Take1":
@@ -1750,6 +1752,8 @@ function download_theme(theme, dx)
             local file = io.open(script_dir .. "\\" .. name .. "\\Header" .. ".bmp", "wb")
             file:write(header_file)
             file:close()
+
+            log("Downloaded header")
         end)
         async_http.dispatch()
     else
@@ -1760,6 +1764,8 @@ function download_theme(theme, dx)
                 file:write(header_file)
                 file:close()
                 done = true
+
+                log("Downloaded header " .. i .. " of " .. dx.header.frame_count)
             end)
             async_http.dispatch()
 
@@ -1774,6 +1780,8 @@ function download_theme(theme, dx)
             local file = io.open(script_dir .. "\\" .. name .. "\\Subheader" .. ".bmp", "wb")
             file:write(subheader_file)
             file:close()
+
+            log("Download subheader")
         end)
         async_http.dispatch()
     end
@@ -1810,20 +1818,15 @@ function download_theme(theme, dx)
                 until done
             end
         end
-
-        async_http.init(github_url, repo_url .. name .. "/Subheader" .. ".bmp", function(subheader_file)
-            local file = io.open(script_dir .. "\\" .. name .. "\\Subheader" .. ".bmp", "wb")
-            file:write(subheader_file)
-            file:close()
-        end)
-        async_http.dispatch()
     end
 
+    -- i honestly dont know what this is
     if dx.overlay.active then
         async_http.init(github_url, repo_url .. name .. "/Overlay" .. ".bmp", function(subheader_file)
             local file = io.open(script_dir .. "\\" .. name .. "\\Overlay" .. ".bmp", "wb")
             file:write(subheader_file)
             file:close()
+            log("Downloading overlay")
         end)
         async_http.dispatch()
     end
@@ -1833,6 +1836,7 @@ function download_theme(theme, dx)
             local file = io.open(script_dir .. "\\" .. name .. "\\Footer" .. ".bmp", "wb")
             file:write(footer_file)
             file:close()
+            log("Downloading footer")
         end)
         async_http.dispatch()
     end
@@ -1842,6 +1846,7 @@ function download_theme(theme, dx)
         file:write(list_icon)
         file:close()
         menu.trigger_commands("reloadtextures")
+        log("Downloading list icon")
     end)
     async_http.dispatch()
 
@@ -1850,6 +1855,7 @@ function download_theme(theme, dx)
         file:write(toggle_on_icon)
         file:close()
         menu.trigger_commands("reloadtextures")
+        log("Downloading toggle on icon")
     end)
     async_http.dispatch()
 
@@ -1858,6 +1864,7 @@ function download_theme(theme, dx)
         file:write(toggle_off_icon)
         file:close()
         menu.trigger_commands("reloadtextures")
+        log("Downloading toggle off icon")
     end)
     async_http.dispatch()
 
@@ -1866,6 +1873,7 @@ function download_theme(theme, dx)
         file:write(toggle_off_icon)
         file:close()
         menu.trigger_commands("reloadfont")
+        log("Downloading font")
     end)
     async_http.dispatch()
 end
@@ -1913,11 +1921,6 @@ function use_theme(name)
     if dx.footer.active == true then
         footerDX = directx.create_texture(script_dir .. "\\" .. theme.name .. "\\Footer.bmp")
     end
-
-    --  idk what this is
-    -- if dx.scrollbar.active == true then
-    --     scrollbarDX = directx.create_texture(filesystem.scripts_dir() .. "RTL/UniversalScrollbar.bmp")
-    -- end
 
     util.create_tick_handler(function()
         if theme.name ~= name then
@@ -2109,6 +2112,10 @@ function use_default_theme()
     }
     download_theme(theme, dx)
     use_theme(theme.name)
+end
+
+function log(msg) 
+    util.toast("[" .. theme.name .. "] " .. msg, TOAST_CONSOLE)
 end
 
 util.keep_running()
