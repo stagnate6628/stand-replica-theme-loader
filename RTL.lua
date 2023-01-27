@@ -1901,6 +1901,11 @@ function use_theme(name)
     menu.trigger_commands("addressbar hide; " .. (name == "Stand" and "addressbar;" or "") .. "clearstandnotifys;") 
     menu.trigger_command(menu.ref_by_path("Stand>Lua Scripts>RTL"))
 
+    -- the rest dont need to run on default theme
+    if theme.name == "Stand" then
+        return
+    end
+
     if dx.header.animated then
         local dir = if dx.header.interaction_header then "\\.interaction" else "\\" .. theme.name
         directx.create_texture(script_dir .. dir .. "\\Header1.bmp")
