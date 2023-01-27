@@ -69,8 +69,7 @@ local theme = {
         spacer = "0",
         scrollbar = "0",
         override = "430"
-    },
-    font = "calibri"
+    }
 }
 
 local dx = {
@@ -287,8 +286,7 @@ theme_selector = menu.action_slider(menu.my_root(), "Theme", {}, "", themes_from
                     spacer = "12",
                     scrollbar = "15",
                     override = "450"
-                },
-                font = "chaletcomprimecolognesixty"
+                }
             }
             dx = {
                 header = {
@@ -387,8 +385,7 @@ theme_selector = menu.action_slider(menu.my_root(), "Theme", {}, "", themes_from
                     spacer = "0",
                     scrollbar = "0",
                     override = "508"
-                },
-                font = "chaletlondonnineteensixty"
+                }
             }
             dx = {
                 header = {
@@ -487,8 +484,7 @@ theme_selector = menu.action_slider(menu.my_root(), "Theme", {}, "", themes_from
                     spacer = "0",
                     scrollbar = "0",
                     override = "440"
-                },
-                font = "calibri"
+                }
             }
             dx = {
                 header = {
@@ -587,8 +583,7 @@ theme_selector = menu.action_slider(menu.my_root(), "Theme", {}, "", themes_from
                     spacer = "0",
                     scrollbar = "0",
                     override = "350"
-                },
-                font = "segoeuisemibold"
+                }
             }
             dx = {
                 header = {
@@ -687,8 +682,7 @@ theme_selector = menu.action_slider(menu.my_root(), "Theme", {}, "", themes_from
                     spacer = "0",
                     scrollbar = "0",
                     override = "432"
-                },
-                font = "chaletlondonnineteensixty"
+                }
             }
             dx = {
                 header = {
@@ -787,8 +781,7 @@ theme_selector = menu.action_slider(menu.my_root(), "Theme", {}, "", themes_from
                     spacer = "12",
                     scrollbar = "15",
                     override = "458"
-                },
-                font = "chaletcomprimecolognesixty"
+                }
             }
             dx = {
                 header = {
@@ -887,8 +880,7 @@ theme_selector = menu.action_slider(menu.my_root(), "Theme", {}, "", themes_from
                     spacer = "0",
                     scrollbar = "0",
                     override = "384"
-                },
-                font = "robotomedium"
+                }
             }
             dx = {
                 header = {
@@ -987,8 +979,7 @@ theme_selector = menu.action_slider(menu.my_root(), "Theme", {}, "", themes_from
                     spacer = "0",
                     scrollbar = "0",
                     override = "460"
-                },
-                font = "chaletlondonnineteensixty"
+            }
             }
             dx = {
                 header = {
@@ -1087,8 +1078,7 @@ theme_selector = menu.action_slider(menu.my_root(), "Theme", {}, "", themes_from
                     spacer = "0",
                     scrollbar = "0",
                     override = "504"
-                },
-                font = "chaletlondonnineteensixty"
+                }
             }
             dx = {
                 header = {
@@ -1187,8 +1177,7 @@ theme_selector = menu.action_slider(menu.my_root(), "Theme", {}, "", themes_from
                     spacer = "0",
                     scrollbar = "0",
                     override = "408"
-                },
-                font = "calibri"
+                }
             }
             dx = {
                 header = {
@@ -1287,8 +1276,7 @@ theme_selector = menu.action_slider(menu.my_root(), "Theme", {}, "", themes_from
                     spacer = "0",
                     scrollbar = "0",
                     override = "442"
-                },
-                font = "chaletcomprimecolognesixty"
+                }
             }
             dx = {
                 header = {
@@ -1387,8 +1375,7 @@ theme_selector = menu.action_slider(menu.my_root(), "Theme", {}, "", themes_from
                     spacer = "0",
                     scrollbar = "0",
                     override = "365"
-                },
-                font = "chaletlondonnineteensixty"
+                }
             }
             dx = {
                 header = {
@@ -1487,8 +1474,7 @@ theme_selector = menu.action_slider(menu.my_root(), "Theme", {}, "", themes_from
                     spacer = "0",
                     scrollbar = "0",
                     override = "469"
-                },
-                font = "chaletcomprimecolognesixty"
+                }
             }
             dx = {
                 header = {
@@ -1587,8 +1573,7 @@ theme_selector = menu.action_slider(menu.my_root(), "Theme", {}, "", themes_from
                     spacer = "0",
                     scrollbar = "0",
                     override = "441"
-                },
-                font = "chaletlondonnineteensixty"
+                }
             }
             dx = {
                 header = {
@@ -1687,8 +1672,7 @@ theme_selector = menu.action_slider(menu.my_root(), "Theme", {}, "", themes_from
                     spacer = "0",
                     scrollbar = "0",
                     override = "432"
-                },
-                font = "chaletlondonnineteensixty"
+                }
             }
             dx = {
                 header = {
@@ -2069,8 +2053,7 @@ function use_default_theme()
             spacer = "3",
             scrollbar = "6",
             override = "450"
-        },
-        font = "microsoftyahei"
+        }
     }
     dx = {
         header = {
