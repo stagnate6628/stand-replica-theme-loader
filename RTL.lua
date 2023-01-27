@@ -142,7 +142,7 @@ theme_selector = menu.action_slider(menu.my_root(), "Theme Selector", {}, "", th
             end)
     end
 
-    util.toast("Downloading " .. value .. " assets")
+    log("Starting download of " .. value .. " assets")
 
     pluto_switch value do
        case "2Take1":
