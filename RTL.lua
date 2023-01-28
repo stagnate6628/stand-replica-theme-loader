@@ -1,21 +1,14 @@
 root = menu.my_root()
-script_dir = filesystem.scripts_dir() .. "RTL"
-theme_dir = filesystem.stand_dir() .. "Theme"
-themes_path = script_dir .. "\\themes.txt"
+tools_root = root:list("Tools", {}, "Tools for this script")
 
-github_url = "raw.githubusercontent.com"
-repo_url = "nealcaffrey259/stand-theme-loader/main/"
-
-current_theme = ""
-
-root:action("Restart script", {}, "", function()
+tools_root:action("Restart script", {}, "", function()
     util:restart_script()
 end)
-root:action("Update script", {}, "", function()
+tools_root:action("Update script", {}, "", function()
     download_file("RTL.lua", filesystem.scripts_dir() .. SCRIPT_RELPATH)
     util:restart_script()
 end)
-root:action("Download themes file", {}, "", function()
+tools_root:action("Download Themes List", {}, "", function()
     async_http.init(github_url, repo_url .. "themes.txt", function(themes_file)
         local file = io.open(themes_path, "wb")
         file:write(themes_file)
@@ -27,6 +20,16 @@ root:action("Download themes file", {}, "", function()
         util:restart_script()
     end
 end)
+
+
+script_dir = filesystem.scripts_dir() .. "RTL"
+theme_dir = filesystem.stand_dir() .. "Theme"
+themes_path = script_dir .. "\\themes.txt"
+
+github_url = "raw.githubusercontent.com"
+repo_url = "nealcaffrey259/stand-theme-loader/main/"
+
+current_theme = ""
 
 root:divider("v1.0")
 
@@ -136,6 +139,7 @@ for line in file:lines() do
     table.insert(themes_from_file, line)
 end
 
+warning = false
 theme_selector = menu.action_slider(menu.my_root(), "Theme Selector", {}, "", themes_from_file, function(_, value)
     if current_theme ~= value then
         current_theme = value
