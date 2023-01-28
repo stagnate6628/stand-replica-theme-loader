@@ -11,6 +11,10 @@ current_theme = ""
 root:action("Restart script", {}, "", function()
     util:restart_script()
 end)
+root:action("Update script", {}, "", function()
+    download_file("RTL.lua", filesystem.scripts_dir() .. SCRIPT_RELPATH)
+    util:restart_script()
+end)
 root:action("Download themes file", {}, "", function()
     async_http.init(github_url, repo_url .. "themes.txt", function(themes_file)
         local file = io.open(themes_path, "wb")
@@ -1736,7 +1740,6 @@ theme_selector = menu.action_slider(menu.my_root(), "Theme Selector", {}, "", th
        break
     end
 
-    -- this should almost always fire
     if table.contains(themes_from_file, value) then
         log("Starting download of " .. value .. " assets")
         download_theme(theme, dx)
