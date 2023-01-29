@@ -8,25 +8,15 @@ themes_path = script_dir .. "\\themes.txt"
 local color_commands = {
     primary = "primary",
     focused_text = "focustext",
-    -- focused_text_opacity = "focustextopacity",
     focused_right_bound_text = "focusrighttext",
-    -- focused_right_bound_text_opacity = "focusrighttextopacity",
     focused_texture = "focustexture",
-    -- focused_texture_opacity = "focustextureopacity",
     background = "background",
-    -- background_opacity = "backgroundpacity",
     unfocused_text = "unfocusedtext",
-    -- unfocused_text_opacity = "unfocusedtextopacity",
     unfocused_right_bound_text = "unfocusedrighttext",
-    -- unfocused_right_bound_text_opacity = "unfocusedrighttextopacity",
     unfocused_texture = "unfocusedtexture",
-    -- unfocused_texture_opacity = "unfocusedtextureopacity",
     hud = "hud",
-    -- hud_opacity = "hudopacity",
     ar = "ar",
-    -- ar_opacity = "aropacity",
     minigame = "minigame"
-    -- minigame_opacity = "minigameopacity"
 }
 
 local position_commands = {
@@ -194,12 +184,10 @@ end
 
 function trigger_command(command, args)
     if args then
-        log(command .. " " .. args)
         menu.trigger_commands(command .. " " .. args)
         return
     end
 
-    log(command)
     menu.trigger_commands(command)
 end
 
