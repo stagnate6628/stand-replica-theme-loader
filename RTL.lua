@@ -1,17 +1,14 @@
 root = menu.my_root()
-script_dir = filesystem.scripts_dir() .. "RTL"
-theme_dir = filesystem.stand_dir() .. "Theme"
-themes_path = script_dir .. "\\themes.txt"
+tools_root = root:list("Tools", {}, "Tools for this script")
 
-github_url = "raw.githubusercontent.com"
-repo_url = "nealcaffrey259/stand-theme-loader/main/"
-
-current_theme = ""
-
-root:action("Restart script", {}, "", function()
+tools_root:action("Restart script", {}, "", function()
     util:restart_script()
 end)
-root:action("Download themes file", {}, "", function()
+tools_root:action("Update script", {}, "", function()
+    download_file("RTL.lua", filesystem.scripts_dir() .. SCRIPT_RELPATH)
+    util:restart_script()
+end)
+tools_root:action("Download Themes List", {}, "", function()
     async_http.init(github_url, repo_url .. "themes.txt", function(themes_file)
         local file = io.open(themes_path, "wb")
         file:write(themes_file)
@@ -23,6 +20,16 @@ root:action("Download themes file", {}, "", function()
         util:restart_script()
     end
 end)
+
+
+script_dir = filesystem.scripts_dir() .. "RTL"
+theme_dir = filesystem.stand_dir() .. "Theme"
+themes_path = script_dir .. "\\themes.txt"
+
+github_url = "raw.githubusercontent.com"
+repo_url = "nealcaffrey259/stand-theme-loader/main/"
+
+current_theme = ""
 
 root:divider("v1.0")
 
@@ -132,12 +139,13 @@ for line in file:lines() do
     table.insert(themes_from_file, line)
 end
 
-theme_selector = menu.action_slider(menu.my_root(), "Theme", {}, "", themes_from_file, function(_, value)
+warning = false
+theme_selector = menu.action_slider(menu.my_root(), "Theme Selector", {}, "", themes_from_file, function(_, value)
     if current_theme ~= value then
         current_theme = value
     else
         menu.show_warning(theme_selector, 1,
-            "It appears you are already using the selected theme. You can force the download if it isn't.", function()
+            "It appears you are already using the selected theme. You can force the download if you aren't.", function()
                 current_theme = value
             end)
     end
@@ -695,7 +703,8 @@ theme_selector = menu.action_slider(menu.my_root(), "Theme", {}, "", themes_from
                     animated = true,
                     frame_count = "18",
                     delay = "0.05",
-                    restart_delay = "8"
+                    restart_delay = "8",
+                    interaction_header = true
                 },
                 overlay = {
                     active = true
@@ -1529,106 +1538,9 @@ theme_selector = menu.action_slider(menu.my_root(), "Theme", {}, "", themes_from
                 }
             }
        break
-       case "The Purge":
-            theme = {
-                name = "The Purge",
-                dirname = "The Purge",
-                position = {
-                    x = "1300",
-                    y = "335"
-                },
-                color = {
-                    background = "1E1E1EFF",
-                    selected = "FF0000FF",
-                    focused = "FFFFFF",
-                    unfocused = "FFFFFF"
-                },
-                tabs = {
-                    state = "off",
-                    width = "0",
-                    height = "0",
-                    position = "top",
-                    text = {
-                        scale = "0",
-                        offsetx = "0",
-                        offsety = "0"
-                    },
-                    alignment = "centre"
-                },
-                text = {
-                    scale = "13",
-                    offset = {
-                        x = "2",
-                        y = "5"
-                    }
-                },
-                outline = {
-                    width = "0",
-                    color = "000000"
-                },
-                size = {
-                    width = "441",
-                    height = "35",
-                    options = "17",
-                    spacer = "0",
-                    scrollbar = "0",
-                    override = "441"
-                }
-            }
-            dx = {
-                header = {
-                    state = "image",
-                    height = "56",
-                    offset = {
-                        x = "0",
-                        y = "0"
-                    },
-                    animated = false,
-                    frame_count = "0",
-                    delay = "0",
-                    restart_delay = "0"
-                },
-                overlay = {
-                    active = false
-                },
-                subheader = {
-                    active = false,
-                    height = "0"
-                },
-                footer = {
-                    active = false,
-                    height = "0"
-                },
-                activecursor = {
-                    active = false,
-                    anchor = "header",
-                    size = "0",
-                    offset = {
-                        x = "0",
-                        y = "0"
-                    },
-                    alignment = ALIGN_BOTTOM_RIGHT,
-                    color = {
-                        r = "255",
-                        g = "255",
-                        b = "255"
-                    }
-                },
-                scrollbar = {
-                    active = false
-                },
-                border = {
-                    active = false,
-                    width = "0",
-                    color = {
-                        r = "0",
-                        g = "0",
-                        b = "0"
-                    }
-                }
-            }
-       break
        case "Epsilon":
+            log("you selected epsilon")
+            
             theme = {
                 name = "Epsilon",
                 dirname = "Interaction",
@@ -1728,16 +1640,136 @@ theme_selector = menu.action_slider(menu.my_root(), "Theme", {}, "", themes_from
                 }
             }
        break
+       case "The Purge":
+            theme = {
+                name = "The Purge",
+                dirname = "The Purge",
+                position = {
+                    x = "1300",
+                    y = "335"
+                },
+                color = {
+                    background = "1E1E1EFF",
+                    selected = "FF0000FF",
+                    focused = "FFFFFF",
+                    unfocused = "FFFFFF"
+                },
+                tabs = {
+                    state = "off",
+                    width = "0",
+                    height = "0",
+                    position = "top",
+                    text = {
+                        scale = "0",
+                        offsetx = "0",
+                        offsety = "0"
+                    },
+                    alignment = "centre"
+                },
+                text = {
+                    scale = "13",
+                    offset = {
+                        x = "2",
+                        y = "5"
+                    }
+                },
+                outline = {
+                    width = "0",
+                    color = "000000"
+                },
+                size = {
+                    width = "441",
+                    height = "35",
+                    options = "17",
+                    spacer = "0",
+                    scrollbar = "0",
+                    override = "441"
+                }
+            }
+            dx = {
+                header = {
+                    state = "image",
+                    height = "56",
+                    offset = {
+                        x = "0",
+                        y = "0"
+                    },
+                    animated = false,
+                    frame_count = "0",
+                    delay = "0",
+                    restart_delay = "0"
+                },
+                overlay = {
+                    active = false
+                },
+                subheader = {
+                    active = false,
+                    height = "0"
+                },
+                footer = {
+                    active = false,
+                    height = "0"
+                },
+                activecursor = {
+                    active = false,
+                    anchor = "header",
+                    size = "0",
+                    offset = {
+                        x = "0",
+                        y = "0"
+                    },
+                    alignment = ALIGN_BOTTOM_RIGHT,
+                    color = {
+                        r = "255",
+                        g = "255",
+                        b = "255"
+                    }
+                },
+                scrollbar = {
+                    active = false
+                },
+                border = {
+                    active = false,
+                    width = "0",
+                    color = {
+                        r = "0",
+                        g = "0",
+                        b = "0"
+                    }
+                }
+            }
+       break
+       default:
+            log("Could not find any assets for the selected theme.")
+       break
     end
 
-    download_theme(theme, dx)
-    use_theme(theme.name)
+    if table.contains(themes_from_file, value) then
+        log("Starting download of " .. value .. " assets")
+        download_theme(theme, dx)
+        use_theme(theme.name)
+    end
 end)
 
 root:action("Reset theme", {}, "", function()
     use_default_theme()
+    log("I have reset to the default scheme as best as possible.")
 end)
 
+function download_file(url_path, file_path, log_msg) 
+    async_http.init(github_url, repo_url .. url_path, function(file_)
+        local file = io.open(file_path, "wb")
+        file:write(file_)
+        file:close()
+
+        if log_msg ~= nil then
+            log(log_msg)
+        end
+    end)
+    async_http.dispatch()
+end
+
+-- todo check if assets from git exists (git api?)
 function download_theme(theme, dx)
     local name = theme.name
 
@@ -1745,37 +1777,30 @@ function download_theme(theme, dx)
         filesystem.mkdir(script_dir .. "\\" .. name)
     end
 
-    if not dx.header.animated then
-        async_http.init(github_url, repo_url .. name .. "/Header" .. ".bmp", function(header_file)
-            local file = io.open(script_dir .. "\\" .. name .. "\\Header" .. ".bmp", "wb")
-            file:write(header_file)
-            file:close()
-        end)
-        async_http.dispatch()
+    if not dx.header.animated and dx.header.frame_count == "0" then
+        download_file(name .. "/Header" .. ".bmp", script_dir .. "\\" .. name .. "\\Header" .. ".bmp", "Downloaded header")
     else
-        for i = 1, dx.header.frame_count do
-            local done = false
-            async_http.init(github_url, repo_url .. name .. "/Header" .. i .. ".bmp", function(header_file)
-                local file = io.open(script_dir .. "\\" .. name .. "\\Header" .. i .. ".bmp", "wb")
-                file:write(header_file)
-                file:close()
-                done = true
-            end)
-            async_http.dispatch()
-
-            repeat
-                util.yield()
-            until done
+        if not dx.header.interaction_header then
+            for i = 1, dx.header.frame_count do
+                local done = false
+                async_http.init(github_url, repo_url .. name .. "/Header" .. i .. ".bmp", function(header_file)
+                    local file = io.open(script_dir .. "\\" .. name .. "\\Header" .. i .. ".bmp", "wb")
+                    file:write(header_file)
+                    file:close()
+                    done = true
+                    log("Downloaded header " .. i .. " of " .. dx.header.frame_count)
+                end)
+                async_http.dispatch()
+    
+                repeat
+                    util.yield()
+                until done
+            end
         end
     end
 
     if dx.subheader.active then
-        async_http.init(github_url, repo_url .. name .. "/Subheader" .. ".bmp", function(subheader_file)
-            local file = io.open(script_dir .. "\\" .. name .. "\\Subheader" .. ".bmp", "wb")
-            file:write(subheader_file)
-            file:close()
-        end)
-        async_http.dispatch()
+        download_file(name .. "/Subheader" .. ".bmp", script_dir .. "\\" .. name .. "\\Subheader" .. ".bmp", "Downloaded subheader")
     end
 
     if dx.header.interaction_header then
@@ -1796,52 +1821,31 @@ function download_theme(theme, dx)
         if missing then
             for i = 1, 18 do
                 local done = false
-                async_http.init(github_url, repo_url .. name .. "/Interaction/" .. "Header" .. i .. ".bmp",
-                    function(header_file)
-                        local file = io.open(header_path .. "Header" .. i .. ".bmp", "wb")
-                        file:write(header_file)
-                        file:close()
-                        done = true
-                    end)
-                async_http.dispatch()
-
+                download_file(name .. "/Interaction/" .. "Header" .. i .. ".bmp", header_path .. "Header" .. i .. ".bmp")
+               
                 repeat
                     util.yield()
                 until done
             end
         end
-
-        async_http.init(github_url, repo_url .. name .. "/Subheader" .. ".bmp", function(subheader_file)
-            local file = io.open(script_dir .. "\\" .. name .. "\\Subheader" .. ".bmp", "wb")
-            file:write(subheader_file)
-            file:close()
-        end)
-        async_http.dispatch()
     end
 
+    -- this seems to only be for "interaction-menu" themes
     if dx.overlay.active then
-        async_http.init(github_url, repo_url .. name .. "/Overlay" .. ".bmp", function(subheader_file)
-            local file = io.open(script_dir .. "\\" .. name .. "\\Overlay" .. ".bmp", "wb")
-            file:write(subheader_file)
-            file:close()
-        end)
-        async_http.dispatch()
+        download_file(name .. "/Overlay" .. ".bmp", script_dir .. "\\" .. name .. "\\Overlay" .. ".bmp", "Downloading overlay")
     end
 
     if dx.footer.active then
-        async_http.init(github_url, repo_url .. name .. "/Footer" .. ".bmp", function(footer_file)
-            local file = io.open(script_dir .. "\\" .. name .. "\\Footer" .. ".bmp", "wb")
-            file:write(footer_file)
-            file:close()
-        end)
-        async_http.dispatch()
+        download_file(name .. "/Footer" .. ".bmp", script_dir .. "\\" .. name .. "\\Footer" .. ".bmp", "Downloading footer")
     end
 
+    -- textures/fonts are done like this b/c they reload more consistently
     async_http.init(github_url, repo_url .. name .. "/List" .. ".png", function(list_icon)
         local file = io.open(theme_dir .. "\\List.png", "wb")
         file:write(list_icon)
         file:close()
         menu.trigger_commands("reloadtextures")
+        log("Downloading list icon")
     end)
     async_http.dispatch()
 
@@ -1850,6 +1854,7 @@ function download_theme(theme, dx)
         file:write(toggle_on_icon)
         file:close()
         menu.trigger_commands("reloadtextures")
+        log("Downloading toggle on icon")
     end)
     async_http.dispatch()
 
@@ -1858,6 +1863,7 @@ function download_theme(theme, dx)
         file:write(toggle_off_icon)
         file:close()
         menu.trigger_commands("reloadtextures")
+        log("Downloading toggle off icon")
     end)
     async_http.dispatch()
 
@@ -1866,8 +1872,14 @@ function download_theme(theme, dx)
         file:write(toggle_off_icon)
         file:close()
         menu.trigger_commands("reloadfont")
+        log("Downloading font")
     end)
     async_http.dispatch()
+
+    -- download_file(name .. "/List" .. ".png", theme_dir .. "\\List.png", "Downloading list icon")
+    -- download_file(name .. "/On" .. ".png", theme_dir .. "\\Toggle On.png", "Downloading toggle on icon")
+    -- download_file(name .. "/Off" .. ".png", theme_dir .. "\\Toggle Off.png", "Downloading toggle off icon")
+    -- download_file(name .. "/Font" .. ".spritefont", theme_dir .. "\\Font.spritefont", "Downloading font")
 end
 
 function use_theme(name)
@@ -1889,35 +1901,33 @@ function use_theme(name)
                               theme.size.options .. "; spacersize " .. theme.size.spacer .. "; scrollbar " ..
                               theme.size.scrollbar .. "; listwidth " .. theme.size.override)
     menu.trigger_commands(
-        "borderwidth 0; blur 0; header hide; showhelptext off; showsyntax off; showsliderbehaviour off;")
-
+        "borderwidth 0; blur 0; header hide; showhelptext off; showsyntax off; showsliderbehaviour off; shownonuseronly off")
+        
     menu.trigger_command(menu.ref_by_path("Stand>Settings>Appearance>Scrollbar>Scrollbar>" ..
                                               (dx.scrollbar.active == false and "Disabled" or "Enabled")))
     menu.trigger_commands("addressbar hide; " .. (name == "Stand" and "addressbar;" or "") .. "clearstandnotifys;") 
     menu.trigger_command(menu.ref_by_path("Stand>Lua Scripts>RTL"))
 
-    if dx.header.animated == true then
-        headersDX = directx.create_texture(script_dir .. "\\" .. theme.name .. "\\" .. theme.dirname .. "\\Header1.bmp")
-    elseif dx.header.state ~= "off" then
-        headerDX = directx.create_texture(script_dir .. "\\" .. theme.dirname .. "\\Header.bmp")
+    if dx.header.animated then
+        local dir = if dx.header.interaction_header then "\\.interaction" else "\\" .. theme.name
+        directx.create_texture(script_dir .. dir .. "\\Header1.bmp")
+    else
+        if theme.name ~= "Stand" then 
+            headerDX = directx.create_texture(script_dir .. "\\" .. theme.dirname .. "\\Header.bmp")
+        end
     end
 
-    if dx.overlay.active == true then
+    if dx.overlay.active then
         overlayDX = directx.create_texture(script_dir .. "\\" .. theme.name .. "\\Overlay.bmp")
     end
 
-    if dx.subheader.active == true then
+    if dx.subheader.active then
         subheaderDX = directx.create_texture(script_dir .. "\\" .. theme.name .. "\\Subheader.bmp")
     end
 
-    if dx.footer.active == true then
+    if dx.footer.active then
         footerDX = directx.create_texture(script_dir .. "\\" .. theme.name .. "\\Footer.bmp")
     end
-
-    --  idk what this is
-    -- if dx.scrollbar.active == true then
-    --     scrollbarDX = directx.create_texture(filesystem.scripts_dir() .. "RTL/UniversalScrollbar.bmp")
-    -- end
 
     util.create_tick_handler(function()
         if theme.name ~= name then
@@ -2001,7 +2011,11 @@ function use_theme(name)
                 end
 
                 util.yield(dx.header.delay * 1000)
-                headersDX = directx.create_texture(script_dir .. "\\" .. name .. "\\Header" .. i .. ".bmp")
+                if not dx.header.interaction_header then
+                    headersDX = directx.create_texture(script_dir .. "\\" .. name .. "\\Header" .. i .. ".bmp")
+                else 
+                    headersDX = directx.create_texture(script_dir .. "\\.interaction" .. "\\Header" .. i .. ".bmp")
+                end
             end
 
             util.yield(dx.header.restart_delay * 1000)
@@ -2109,6 +2123,10 @@ function use_default_theme()
     }
     download_theme(theme, dx)
     use_theme(theme.name)
+end
+
+function log(msg) 
+    util.toast("[" .. theme.name .. "] " .. msg, TOAST_CONSOLE)
 end
 
 util.keep_running()
