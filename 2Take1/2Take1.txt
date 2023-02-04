@@ -46,3 +46,5 @@ Stand
 			List Height: 46
 			Spacer Size: 0
 			Background Blur: 0
+Lua Scripts
+	stand-theme-manager-profiles: On
