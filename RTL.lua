@@ -6,8 +6,8 @@ profile_dir = filesystem.stand_dir() .. "Profiles"
 github_url = "raw.githubusercontent.com"
 repo_url = "nealcaffrey259/stand-theme-loader/main/"
 
-screen_x <const> = 1920
-screen_y <const> = 1080
+screen_x = 1920
+screen_y = 1080
 
 if SCRIPT_MANUAL_START or SCRIPT_SILENT_START then
     filesystem.mkdir(script_dir)
@@ -1617,8 +1617,6 @@ home:list_action("Theme Selector", {}, "", themes_from_file, function(_, value, 
             }
        break
        case "Epsilon":
-            log("you selected epsilon")
-            
             theme = {
                 name = "Epsilon",
                 dirname = "Interaction",
@@ -1880,7 +1878,7 @@ function download_theme(theme, dx)
                     file:write(header_file)
                     file:close()
                     done = true
-                    log("Downloaded header " .. i .. " of " .. dx.header.frame_count)
+                    log("Downloaded header " .. i .. "/" .. dx.header.frame_count)
                 end)
                 async_http.dispatch()
     
@@ -2100,10 +2098,6 @@ function use_theme(name)
     end
 end
 
-function log(msg) 
-    util.toast("[" .. theme.name .. "] " .. msg, TOAST_CONSOLE)
-end
-
 function download_available_themes()
     async_http.init(github_url, repo_url .. "themes.txt", function(body, _, status_code)
         response = true
@@ -2148,6 +2142,10 @@ end
 
 function reload_textures()
     trigger_command("reloadtextures")
+end
+
+function log(msg) 
+    util.toast("[" .. theme.name .. "] " .. msg, TOAST_CONSOLE)
 end
 
 util.keep_running()
