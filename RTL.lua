@@ -2054,6 +2054,12 @@ function use_theme(name)
         trigger_command("addressbar hide; " .. (name == "Stand" and "addressbar;" or "") .. "clearstandnotifys;") 
     end
 
+    if name == "Stand" then
+        trigger_command("showhelptext on")
+        trigger_command("showsyntax on")
+        trigger_command("showsliderbehaviour")
+    end
+
     trigger_command_by_ref("Stand>Lua Scripts>RTL")
 
     if dx.header.animated then
