@@ -7,4 +7,4 @@ Understands Command Chaining: Yes
 Tree Compatibility Version: 43
 Stand
 	Lua Scripts
-		stand-theme-manager-profiles: On
+		RTL: On

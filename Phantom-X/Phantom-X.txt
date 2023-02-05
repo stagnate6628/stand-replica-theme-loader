@@ -48,4 +48,4 @@ Stand
 			Spacer Size: 12
 			Background Blur: 0
 	Lua Scripts
-		stand-theme-manager-profiles: On
+		RTL: On
