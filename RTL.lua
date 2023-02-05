@@ -1,6 +1,7 @@
 script_dir = filesystem.scripts_dir() .. "RTL"
 theme_dir = filesystem.stand_dir() .. "Theme"
 theme_path = script_dir .. "\\themes.txt"
+profile_dir = filesystem.stand_dir() .. "Profiles"
 
 github_url = "raw.githubusercontent.com"
 repo_url = "nealcaffrey259/stand-theme-loader/main/"
@@ -121,6 +122,9 @@ local dx = {
 }
 
 local home = menu.my_root()
+home:toggle("Use Profile", {}, "Download and load the associated profile for a theme. (Uses a clean profile, command states are not saved)", function(on)
+    use_profile = on
+end, true)
 home:list_action("Theme Selector", {}, "", themes_from_file, function(_, value, click_type)
     pluto_switch value do
        case "Stand":
@@ -1846,6 +1850,22 @@ function download_theme(theme, dx)
         filesystem.mkdir(script_dir .. "\\" .. name)
     end
 
+    if use_profile then
+        async_http.init(github_url, repo_url .. name .. "/" .. name .. ".txt", function(body)
+            log("Downloading profile")
+            local file = io.open(profile_dir .. "\\" .. name .. ".txt", "wb")
+            file:write(body)
+            file:close()
+            util.yield(500)
+            trigger_command_by_ref("Stand>Profiles")
+            util.yield(500)
+            trigger_command("load" .. string.lower(name))
+            util.yield(500)
+            trigger_command_by_ref("Stand>Lua Scripts>RTL")
+        end)
+        async_http.dispatch()
+    end
+
     if not dx.header.animated and dx.header.frame_count == "0" then
         download_file(name .. "/Header" .. ".bmp", script_dir .. "\\" .. name .. "\\Header" .. ".bmp", "Downloaded header")
     else
@@ -1879,7 +1899,6 @@ function download_theme(theme, dx)
         end
 
         local missing = false
-        --  there is probably a better way to do this
         for i, path in ipairs(filesystem.list_files(header_path)) do
             if not filesystem.exists(header_path .. "Header1.bmp") then
                 missing = true
@@ -1899,7 +1918,6 @@ function download_theme(theme, dx)
         end
     end
 
-    -- this seems to only be for "interaction-menu" themes
     if dx.overlay.active then
         download_file(name .. "/Overlay" .. ".bmp", script_dir .. "\\" .. name .. "\\Overlay" .. ".bmp", "Downloading overlay")
     end
@@ -1908,12 +1926,11 @@ function download_theme(theme, dx)
         download_file(name .. "/Footer" .. ".bmp", script_dir .. "\\" .. name .. "\\Footer" .. ".bmp", "Downloading footer")
     end
 
-    -- textures/fonts are done like this b/c they reload more consistently
     async_http.init(github_url, repo_url .. name .. "/List" .. ".png", function(list_icon)
         local file = io.open(theme_dir .. "\\List.png", "wb")
         file:write(list_icon)
         file:close()
-        menu.trigger_commands("reloadtextures")
+        reload_textures()
         log("Downloading list icon")
     end)
     async_http.dispatch()
@@ -1922,7 +1939,7 @@ function download_theme(theme, dx)
         local file = io.open(theme_dir .. "\\Toggle On.png", "wb")
         file:write(toggle_on_icon)
         file:close()
-        menu.trigger_commands("reloadtextures")
+        reload_textures()
         log("Downloading toggle on icon")
     end)
     async_http.dispatch()
@@ -1931,7 +1948,7 @@ function download_theme(theme, dx)
         local file = io.open(theme_dir .. "\\Toggle Off.png", "wb")
         file:write(toggle_off_icon)
         file:close()
-        menu.trigger_commands("reloadtextures")
+        reload_textures()
         log("Downloading toggle off icon")
     end)
     async_http.dispatch()
@@ -1940,36 +1957,39 @@ function download_theme(theme, dx)
         local file = io.open(theme_dir .. "\\Font.spritefont", "wb")
         file:write(toggle_off_icon)
         file:close()
-        menu.trigger_commands("reloadfont")
+        reload_font()
         log("Downloading font")
     end)
     async_http.dispatch()
 end
 
 function use_theme(name)
-    trigger_command("menux " .. theme.position.x .. "; menuy " .. theme.position.y)
-    trigger_command("background " .. theme.color.background .. "; primary " .. theme.color.selected ..
-                              "; focustext " .. theme.color.focused .. "; focusrighttext " .. theme.color.focused ..
-                              "; focustexture " .. theme.color.focused .. "; unfocusedtext " .. theme.color.unfocused ..
-                              "; unfocusedrighttext " .. theme.color.unfocused .. "; unfocusedtexture " ..
-                              theme.color.unfocused)
-    trigger_command("tabs " .. theme.tabs.state .. "; tabswidth " .. theme.tabs.width .. "; tabsheight " ..
-                              theme.tabs.height .. "; tabsposition " .. theme.tabs.position .. "; tabstextscale " ..
-                              theme.tabs.text.scale .. "; tabstextxoffset " .. theme.tabs.text.offsetx ..
-                              "; tabstextyoffset " .. theme.tabs.text.offsety .. "; tabsalignment " ..
-                              theme.tabs.alignment)
-    trigger_command("commandtextscale " .. theme.text.scale .. "; commandtextxoffset " .. theme.text.offset.x ..
-                              "; commandtextyoffset " .. theme.text.offset.y)
-    trigger_command("cursorborderwidth " .. theme.outline.width .. "; cursorborder " .. theme.outline.color)
-    trigger_command("listwidth " .. theme.size.width .. "; listheight " .. theme.size.height .. "; menuheight " ..
-                              theme.size.options .. "; spacersize " .. theme.size.spacer .. "; scrollbar " ..
-                              theme.size.scrollbar .. "; listwidth " .. theme.size.override)
-    trigger_command(
+    if not use_profile then
+        trigger_command("menux " .. theme.position.x .. "; menuy " .. theme.position.y)
+        trigger_command("background " .. theme.color.background .. "; primary " .. theme.color.selected ..
+                            "; focustext " .. theme.color.focused .. "; focusrighttext " .. theme.color.focused ..
+                            "; focustexture " .. theme.color.focused .. "; unfocusedtext " .. theme.color.unfocused ..
+                            "; unfocusedrighttext " .. theme.color.unfocused .. "; unfocusedtexture " ..
+                            theme.color.unfocused)
+        trigger_command("tabs " .. theme.tabs.state .. "; tabswidth " .. theme.tabs.width .. "; tabsheight " ..
+                            theme.tabs.height .. "; tabsposition " .. theme.tabs.position .. "; tabstextscale " ..
+                            theme.tabs.text.scale .. "; tabstextxoffset " .. theme.tabs.text.offsetx ..
+                            "; tabstextyoffset " .. theme.tabs.text.offsety .. "; tabsalignment " ..
+                            theme.tabs.alignment)
+        trigger_command("commandtextscale " .. theme.text.scale .. "; commandtextxoffset " .. theme.text.offset.x ..
+                            "; commandtextyoffset " .. theme.text.offset.y)
+        trigger_command("cursorborderwidth " .. theme.outline.width .. "; cursorborder " .. theme.outline.color)
+        trigger_command("listwidth " .. theme.size.width .. "; listheight " .. theme.size.height .. "; menuheight " ..
+                            theme.size.options .. "; spacersize " .. theme.size.spacer .. "; scrollbar " ..
+                            theme.size.scrollbar .. "; listwidth " .. theme.size.override)
+        trigger_command(
         "borderwidth 0; blur 0; header hide; showhelptext off; showsyntax off; showsliderbehaviour off; shownonuseronly off")
-        
-    trigger_command_by_ref("Stand>Settings>Appearance>Scrollbar>Scrollbar>" ..
-                                              (dx.scrollbar.active == false and "Disabled" or "Enabled"))
-    trigger_command("addressbar hide; " .. (name == "Stand" and "addressbar;" or "") .. "clearstandnotifys;") 
+
+        trigger_command_by_ref("Stand>Settings>Appearance>Scrollbar>Scrollbar>" ..
+                                            (dx.scrollbar.active == false and "Disabled" or "Enabled"))
+        trigger_command("addressbar hide; " .. (name == "Stand" and "addressbar;" or "") .. "clearstandnotifys;") 
+    end
+
     trigger_command_by_ref("Stand>Lua Scripts>RTL")
 
     if dx.header.animated then
@@ -2010,17 +2030,10 @@ function use_theme(name)
             end
 
             if dx.header.state == "image" then
-                if dx.header.animated then
-                    directx.draw_texture(header_texture, 1, (dx.header.height / 1080) / 2, 0, 0,
-                        position_x - dx.header.offset.x / 1920,
-                        (position_y - (dx.header.height + dx.subheader.height) / 1080) - (theme.tabs.height / 1080) -
-                            (dx.header.offset.y / 1080), 0, 1, 1, 1, 1)
-                else
-                    directx.draw_texture(header_texture, 1, (dx.header.height / 1080) / 2, 0, 0,
-                        position_x - dx.header.offset.x / 1920,
-                        (position_y - (dx.header.height + dx.subheader.height) / 1080) - (theme.tabs.height / 1080) -
-                            (dx.header.offset.y / 1080), 0, 1, 1, 1, 1)
-                end
+                directx.draw_texture(header_texture, 1, (dx.header.height / 1080) / 2, 0, 0,
+                    position_x - dx.header.offset.x / 1920,
+                    (position_y - (dx.header.height + dx.subheader.height) / 1080) - (theme.tabs.height / 1080) -
+                        (dx.header.offset.y / 1080), 0, 1, 1, 1, 1)
             elseif dx.header.state == "background" then
                 directx.draw_texture(header_texture, (theme.size.width / 3840), (dx.header.height / 3840), 0, 0,
                     position_x - (dx.header.offset.x / 1920), position_y - (dx.header.offset.y / 1080), 0, 1, 1, 1, 1)
@@ -2134,6 +2147,5 @@ end
 function reload_textures()
     trigger_command("reloadtextures")
 end
-
 
 util.keep_running()
