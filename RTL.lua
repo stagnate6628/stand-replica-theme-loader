@@ -125,12 +125,13 @@ local dx = {
 }
 
 local home = menu.my_root()
+local current_theme = ""
 local should_download = true
 home:toggle("Use Profile", {}, "Download and load the associated profile for a theme. (Uses a clean profile, command states are not persisted)", function(on)
     use_profile = on
 end, true)
 theme_selector = home:list_action("Theme Selector", {}, "", themes_from_file, function(_, value, click_type)
-    if not should_download then
+    if current_theme == value then
         should_download = false
         menu.show_warning(theme_selector, click_type, "It appears you are already using this theme. Continue if you want to force the download.", function() 
             should_download = true
@@ -1828,7 +1829,9 @@ theme_selector = home:list_action("Theme Selector", {}, "", themes_from_file, fu
 
         download_theme(theme, dx)
         use_theme(theme.name)
-        should_download = false
+        current_theme = value
+    else 
+        log("should not download")
     end
 end)
 
@@ -1931,48 +1934,96 @@ function download_theme(theme, dx)
     end
 
     if dx.overlay.active then
-        download_file(name .. "/Overlay" .. ".bmp", script_dir .. "\\" .. name .. "\\Overlay" .. ".bmp", "Downloading overlay")
+        download_file(name .. "/Overlay" .. ".bmp", script_dir .. "\\" .. name .. "\\Overlay" .. ".bmp", "Downloaded overlay")
     end
 
     if dx.footer.active then
-        download_file(name .. "/Footer" .. ".bmp", script_dir .. "\\" .. name .. "\\Footer" .. ".bmp", "Downloading footer")
+        download_file(name .. "/Footer" .. ".bmp", script_dir .. "\\" .. name .. "\\Footer" .. ".bmp", "Downloaded footer")
     end
 
-    async_http.init(github_url, repo_url .. name .. "/List" .. ".png", function(list_icon)
+    async_http.init(github_url, repo_url .. name .. "/List" .. ".png", function(body)
+        response = true
         local file = io.open(theme_dir .. "\\List.png", "wb")
-        file:write(list_icon)
+        if file == nil then
+            log("Failed to write List.png")
+            return
+        end
+        file:write(body)
         file:close()
+
         reload_textures()
-        log("Downloading list icon")
+        log("Downloaded List Icon")
+    end, function() 
+        response = true
     end)
     async_http.dispatch()
+    repeat 
+        util.yield()
+    until response
 
-    async_http.init(github_url, repo_url .. name .. "/Toggle On" .. ".png", function(toggle_on_icon)
+    async_http.init(github_url, repo_url .. name .. "/Toggle On" .. ".png", function(body)
+        response = true
         local file = io.open(theme_dir .. "\\Toggle On.png", "wb")
-        file:write(toggle_on_icon)
+        if file == nil then
+            log("Failed to write Toggle On.png")
+            return
+        end
+
+        file:write(body)
         file:close()
+        
         reload_textures()
-        log("Downloading toggle on icon")
+        log("Downloaded Toggle On Icon")
+    end, function() 
+        response = true
     end)
     async_http.dispatch()
+    repeat 
+        util.yield()
+    until response
 
-    async_http.init(github_url, repo_url .. name .. "/Toggle Off" .. ".png", function(toggle_off_icon)
+    async_http.init(github_url, repo_url .. name .. "/Toggle Off" .. ".png", function(body)
+        response = true
         local file = io.open(theme_dir .. "\\Toggle Off.png", "wb")
-        file:write(toggle_off_icon)
+        if file == nil then
+            log("Failed to write Toggle Off.png")
+            return
+        end
+        
+        file:write(body)
         file:close()
-        reload_textures()
-        log("Downloading toggle off icon")
-    end)
-    async_http.dispatch()
 
-    async_http.init(github_url, repo_url .. name .. "/Font" .. ".spritefont", function(toggle_off_icon)
-        local file = io.open(theme_dir .. "\\Font.spritefont", "wb")
-        file:write(toggle_off_icon)
-        file:close()
-        reload_font()
-        log("Downloading font")
+        reload_textures()
+        log("Downloaded Toggle Off Icon")
+    end, function() 
+        response = true
     end)
     async_http.dispatch()
+    repeat 
+        util.yield()
+    until response)
+
+    async_http.init(github_url, repo_url .. name .. "/Font" .. ".spritefont", function(body)
+        response = true
+        local file = io.open(theme_dir .. "\\Font.spritefont", "wb")
+
+        if file == nil then
+            log("Failed to write Font.spritefont")
+            return
+        end
+
+        file:write(body)
+        file:close()
+        
+        reload_font()
+        log("Downloaded font")
+    end, function() 
+        response = true
+    end)
+    async_http.dispatch()
+    repeat 
+        util.yield()
+    until response
 end
 
 function use_theme(name)
