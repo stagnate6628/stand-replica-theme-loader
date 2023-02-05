@@ -130,6 +130,9 @@ local should_download = true
 home:toggle("Use Profile", {}, "Download and load the associated profile for a theme. (Uses a clean profile, command states are not persisted)", function(on)
     use_profile = on
 end, true)
+home:toggle("Use local assets when possible", {}, "Skips downloading external assets entirely if they are available in their respective folder inside: " .. script_dir, function(on)
+    use_local_assets = on
+end, true)
 theme_selector = home:list_action("Theme Selector", {}, "", themes_from_file, function(_, value, click_type)
     if current_theme == value then
         should_download = false
@@ -1830,8 +1833,6 @@ theme_selector = home:list_action("Theme Selector", {}, "", themes_from_file, fu
         download_theme(theme, dx)
         use_theme(theme.name)
         current_theme = value
-    else 
-        log("should not download")
     end
 end)
 
@@ -1846,6 +1847,11 @@ end)
 misc:hyperlink("Github Repo", "https://github.com/nealcaffrey259/stand-theme-loader/")
 
 function download_file(url_path, file_path, log_msg) 
+    if use_local_assets then
+        log("Skipping download for file " .. file_path)
+        return
+    end
+
     async_http.init(github_url, repo_url .. url_path, function(file_)
         local file = io.open(file_path, "wb")
         file:write(file_)
@@ -2057,7 +2063,7 @@ function use_theme(name)
     if name == "Stand" then
         trigger_command("showhelptext on")
         trigger_command("showsyntax on")
-        trigger_command("showsliderbehaviour")
+        trigger_command("showsliderbehaviour on")
     end
 
     trigger_command_by_ref("Stand>Lua Scripts>RTL")
