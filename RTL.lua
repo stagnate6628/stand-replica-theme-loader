@@ -125,7 +125,7 @@ local dx = {
 }
 
 local home = menu.my_root()
-home:toggle("Use Profile", {}, "Download and load the associated profile for a theme. (Uses a clean profile, command states are not saved)", function(on)
+home:toggle("Use Profile", {}, "Download and load the associated profile for a theme. (Uses a clean profile, command states are not persisted)", function(on)
     use_profile = on
 end, true)
 home:list_action("Theme Selector", {}, "", themes_from_file, function(_, value, click_type)
