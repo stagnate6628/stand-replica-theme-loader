@@ -1851,7 +1851,7 @@ misc:hyperlink("Open RTL Folder", "file:///" .. script_dir)
 misc:hyperlink("Github Repo", "https://github.com/nealcaffrey259/stand-theme-loader/")
 
 function download_file(url_path, file_path, log_msg) 
-    if use_local_assets then
+    if use_local_assets and not filesystem.exists(file_path) then
         log("Skipping download for file " .. file_path)
         return
     end
@@ -1896,19 +1896,21 @@ function download_theme(theme, dx)
     else
         if not dx.header.interaction_header then
             for i = 1, dx.header.frame_count do
-                local done = false
-                async_http.init(github_url, repo_url .. name .. "/Header" .. i .. ".bmp", function(header_file)
-                    local file = io.open(script_dir .. "\\" .. name .. "\\Header" .. i .. ".bmp", "wb")
-                    file:write(header_file)
-                    file:close()
-                    done = true
-                    log("Downloaded header " .. i .. "/" .. dx.header.frame_count)
-                end)
-                async_http.dispatch()
-    
-                repeat
-                    util.yield()
-                until done
+                if not filesystem.exists(script_dir .. "\\" .. name .. "\\Header" .. i .. ".bmp") then
+                    local done = false
+                    async_http.init(github_url, repo_url .. name .. "/Header" .. i .. ".bmp", function(header_file)
+                        local file = io.open(script_dir .. "\\" .. name .. "\\Header" .. i .. ".bmp", "wb")
+                        file:write(header_file)
+                        file:close()
+                        done = true
+                        log("Downloaded header " .. i .. "/" .. dx.header.frame_count)
+                    end)
+                    async_http.dispatch()
+
+                    repeat
+                        util.yield()
+                    until done
+                end
             end
         end
     end
