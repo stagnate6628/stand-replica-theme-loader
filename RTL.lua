@@ -6,6 +6,9 @@ profile_dir = filesystem.stand_dir() .. "Profiles"
 github_url = "raw.githubusercontent.com"
 repo_url = "nealcaffrey259/stand-theme-loader/main/"
 
+screen_x <const> = 1920
+screen_y <const> = 1080
+
 if SCRIPT_MANUAL_START or SCRIPT_SILENT_START then
     filesystem.mkdir(script_dir)
 
@@ -2019,59 +2022,58 @@ function use_theme(name)
         end
 
         position_x, position_y, list_width, list_height = menu.get_main_view_position_and_size()
-        activecursorDX = menu.get_active_list_cursor_text(true, true)
+        active_cursor = menu.get_active_list_cursor_text(true, true)
 
         if menu.is_open() then
             if dx.border.active then
-                directx.draw_rect(position_x - dx.header.offset.x / 1920, position_y, dx.border.width / 1920,
+                directx.draw_rect(position_x - dx.header.offset.x / screen_x, position_y, dx.border.width / screen_x,
                     list_height, dx.border.color.r / 255, dx.border.color.g / 255, dx.border.color.b / 255, 1)
-                directx.draw_rect(position_x + list_width, position_y, dx.border.width / 1920, list_height,
+                directx.draw_rect(position_x + list_width, position_y, dx.border.width / screen_x, list_height,
                     dx.border.color.r / 255, dx.border.color.g / 255, dx.border.color.b / 255, 1)
             end
 
             if dx.header.state == "image" then
-                directx.draw_texture(header_texture, 1, (dx.header.height / 1080) / 2, 0, 0,
-                    position_x - dx.header.offset.x / 1920,
-                    (position_y - (dx.header.height + dx.subheader.height) / 1080) - (theme.tabs.height / 1080) -
-                        (dx.header.offset.y / 1080), 0, 1, 1, 1, 1)
+                directx.draw_texture(header_texture, 1, (dx.header.height / screen_y) / 2, 0, 0,
+                    position_x - dx.header.offset.x / screen_x,
+                    (position_y - (dx.header.height + dx.subheader.height) / screen_y) - (theme.tabs.height / screen_y) -
+                        (dx.header.offset.y / screen_y), 0, 1, 1, 1, 1)
             elseif dx.header.state == "background" then
                 directx.draw_texture(header_texture, (theme.size.width / 3840), (dx.header.height / 3840), 0, 0,
-                    position_x - (dx.header.offset.x / 1920), position_y - (dx.header.offset.y / 1080), 0, 1, 1, 1, 1)
+                    position_x - (dx.header.offset.x / screen_x), position_y - (dx.header.offset.y / screen_y), 0, 1, 1, 1, 1)
             end
 
             if dx.overlay.active then
-                directx.draw_texture(overlay_texture, 1, (dx.header.height / 1080) / 2, 0, 0,
-                    position_x - dx.header.offset.x / 1920,
-                    (position_y - (dx.header.height + dx.subheader.height) / 1080) - (theme.tabs.height / 1080) -
-                        (dx.header.offset.y / 1080), 0, 1, 1, 1, 1)
+                directx.draw_texture(overlay_texture, 1, (dx.header.height / screen_y) / 2, 0, 0,
+                    position_x - dx.header.offset.x / screen_x,
+                    (position_y - (dx.header.height + dx.subheader.height) / screen_y) - (theme.tabs.height / screen_y) -
+                        (dx.header.offset.y / screen_y), 0, 1, 1, 1, 1)
             end
 
             if dx.subheader.active then
-                directx.draw_texture(subheader_texture, 1, (dx.subheader.height / 1080) / 2, 0, 0,
-                    position_x - dx.header.offset.x / 1920, (position_y - dx.subheader.height / 1080) -
-                        (theme.tabs.height / 1080) - (dx.header.offset.y / 1080), 0, 1, 1, 1, 1)
+                directx.draw_texture(subheader_texture, 1, (dx.subheader.height / screen_y) / 2, 0, 0,
+                    position_x - dx.header.offset.x / screen_x, (position_y - dx.subheader.height / screen_y) -
+                        (theme.tabs.height / screen_y) - (dx.header.offset.y / screen_y), 0, 1, 1, 1, 1)
             end
 
             if dx.footer.active then
-                directx.draw_texture(footer_texture, 1, (dx.footer.height / 1080) / 2, 0, 0,
-                    position_x - dx.header.offset.x / 1920, (position_y + list_height - (1 / 1080)), 0, 1, 1, 1, 1)
+                directx.draw_texture(footer_texture, 1, (dx.footer.height / screen_y) / 2, 0, 0,
+                    position_x - dx.header.offset.x / screen_x, (position_y + list_height - (1 / screen_y)), 0, 1, 1, 1, 1)
             end
 
             if dx.activecursor.active then
                 if dx.activecursor.anchor == "header" then
-                    directx.draw_text(position_x - dx.activecursor.offset.x / 1920,
-                        position_y - dx.activecursor.offset.y / 1080, activecursorDX, dx.activecursor.alignment,
+                    directx.draw_text(position_x - dx.activecursor.offset.x / screen_x,
+                        position_y - dx.activecursor.offset.y / screen_y, active_cursor, dx.activecursor.alignment,
                         (dx.activecursor.size / 11) / 2, dx.activecursor.color.r / 255, dx.activecursor.color.g / 255,
                         dx.activecursor.color.b / 255, 1)
                 end
 
                 if dx.activecursor.anchor == "footer" then
-                    directx.draw_text(position_x - dx.activecursor.offset.x / 1920, (position_y + list_height +
-                        (theme.size.height / 1080)) - dx.activecursor.offset.y / 1080, activecursorDX,
+                    directx.draw_text(position_x - dx.activecursor.offset.x / screen_x, (position_y + list_height +
+                        (theme.size.height / screen_y)) - dx.activecursor.offset.y / screen_y, active_cursor,
                         dx.activecursor.alignment, (dx.activecursor.size / 11) / 2, dx.activecursor.color.r / 255,
                         dx.activecursor.color.g / 255, dx.activecursor.color.b / 255, 1)
                 end
-
             end
         end
     end)
