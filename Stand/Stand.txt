@@ -6,5 +6,9 @@ Understands Context Menu: Yes
 Understands Command Chaining: Yes
 Tree Compatibility Version: 43
 Stand
+	Settings
+		Appearance
+			Command Info Text
+				Indicate If Usable By Other Players: Off
 	Lua Scripts
 		RTL: On
