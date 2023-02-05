@@ -2001,7 +2001,7 @@ function download_theme(theme, dx)
     async_http.dispatch()
     repeat 
         util.yield()
-    until response)
+    until response
 
     async_http.init(github_url, repo_url .. name .. "/Font" .. ".spritefont", function(body)
         response = true
@@ -2021,6 +2021,7 @@ function download_theme(theme, dx)
         response = true
     end)
     async_http.dispatch()
+
     repeat 
         util.yield()
     until response
