@@ -4,7 +4,7 @@ theme_path = script_dir .. "\\themes.txt"
 profile_dir = filesystem.stand_dir() .. "Profiles"
 
 github_url = "raw.githubusercontent.com"
-repo_url = "nealcaffrey259/stand-theme-loader/main/"
+repo_url = "nealcaffrey259/stand-replica-theme-loader/main/"
 
 screen_x = 1920
 screen_y = 1080
