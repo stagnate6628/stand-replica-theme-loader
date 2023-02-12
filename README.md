@@ -1,2 +1,1 @@
-# stand-theme-loader
-Theme loader for Stand
+Superseded by https://github.com/stagnate6628/stand-profile-helper
